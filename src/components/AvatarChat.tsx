@@ -64,7 +64,7 @@ export function AvatarChat({ childInfo, onSessionEnd }: AvatarChatProps) {
       const contextId = import.meta.env.VITE_HEYGEN_SANTA_CONTEXT_ID;
 
       if (!avatarId || !voiceId) {
-        throw new Error('Missing HeyGen API configuration. Please check your .env file.');
+        throw new Error('Falta la configuración de API de HeyGen. Por favor revisa tu archivo .env.');
       }
 
       // Create HeyGen session token via backend
@@ -111,12 +111,15 @@ export function AvatarChat({ childInfo, onSessionEnd }: AvatarChatProps) {
       });
 
       session.on(AgentEventsEnum.AVATAR_SPEAK_STARTED, () => {
+        console.log('🎅 Santa started speaking');
         setIsAvatarTalking(true);
       });
 
       session.on(AgentEventsEnum.AVATAR_SPEAK_ENDED, (data: any) => {
+        console.log('🎅 Santa stopped speaking:', data);
         setIsAvatarTalking(false);
         if (data?.text) {
+          console.log('💬 Santa said:', data.text);
           setTranscript(prev => [...prev, {
             role: 'assistant',
             text: data.text,
@@ -126,12 +129,15 @@ export function AvatarChat({ childInfo, onSessionEnd }: AvatarChatProps) {
       });
 
       session.on(AgentEventsEnum.USER_SPEAK_STARTED, () => {
+        console.log('👤 User started speaking');
         setIsUserTalking(true);
       });
 
       session.on(AgentEventsEnum.USER_SPEAK_ENDED, (data: any) => {
+        console.log('👤 User stopped speaking:', data);
         setIsUserTalking(false);
         if (data?.text) {
+          console.log('📝 User said:', data.text);
           setTranscript(prev => [...prev, {
             role: 'user',
             text: data.text,
@@ -141,11 +147,17 @@ export function AvatarChat({ childInfo, onSessionEnd }: AvatarChatProps) {
       });
 
       session.voiceChat.on(VoiceChatEvent.MUTED, () => {
+        console.log('🔇 Microphone muted');
         setIsMuted(true);
       });
 
       session.voiceChat.on(VoiceChatEvent.UNMUTED, () => {
+        console.log('🎤 Microphone unmuted');
         setIsMuted(false);
+      });
+
+      session.voiceChat.on(VoiceChatEvent.STATE_CHANGED, (state: any) => {
+        console.log('🎤 Voice chat state changed:', state);
       });
 
       // Start the session
@@ -155,10 +167,11 @@ export function AvatarChat({ childInfo, onSessionEnd }: AvatarChatProps) {
       // Start voice chat automatically
       console.log('Starting voice chat...');
       await session.voiceChat.start();
+      console.log('✅ Voice chat started successfully');
 
     } catch (err) {
       console.error('Session initialization error:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Failed to connect to Santa';
+      const errorMessage = err instanceof Error ? err.message : 'No se pudo conectar con Santa';
       setError(errorMessage);
       setIsConnecting(false);
       setConnectionStatus('disconnected');
@@ -176,8 +189,8 @@ export function AvatarChat({ childInfo, onSessionEnd }: AvatarChatProps) {
   }
 
   async function handleEndCall() {
-    if (confirm('Are you sure you want to end the call with Santa?')) {
-      const fullTranscript = transcript.map(m => `${m.role === 'user' ? 'Child' : 'Santa'}: ${m.text}`).join('\n');
+    if (confirm('¿Estás seguro que quieres terminar la llamada con Santa?')) {
+      const fullTranscript = transcript.map(m => `${m.role === 'user' ? 'Niño' : 'Santa'}: ${m.text}`).join('\n');
 
       if (sessionRef.current) {
         try {
@@ -203,13 +216,13 @@ export function AvatarChat({ childInfo, onSessionEnd }: AvatarChatProps) {
       <div className="flex flex-col items-center justify-center min-h-screen bg-red-50 p-6">
         <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full text-center">
           <div className="text-red-600 text-5xl mb-4">⚠️</div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Connection Error</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Error de Conexión</h2>
           <p className="text-lg text-red-600 mb-6">{error}</p>
           <button
             onClick={() => window.location.reload()}
             className="christmas-button"
           >
-            Try Again
+            Intentar de Nuevo
           </button>
         </div>
       </div>
@@ -232,8 +245,8 @@ export function AvatarChat({ childInfo, onSessionEnd }: AvatarChatProps) {
         <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-christmas-red to-red-800">
           <div className="text-center">
             <Loader2 className="w-16 h-16 text-white animate-spin mx-auto mb-6" />
-            <h2 className="text-white text-3xl font-bold mb-2">Connecting to Santa...</h2>
-            <p className="text-white/80 text-lg">🎄 Getting the North Pole ready 🎄</p>
+            <h2 className="text-white text-3xl font-bold mb-2">Conectando con Santa...</h2>
+            <p className="text-white/80 text-lg">🎄 Preparando el Polo Norte 🎄</p>
           </div>
         </div>
       )}
@@ -250,18 +263,18 @@ export function AvatarChat({ childInfo, onSessionEnd }: AvatarChatProps) {
         'bg-red-500'
       } text-white flex items-center gap-2`}>
         <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
-        {connectionStatus === 'connected' ? 'Live' :
-         connectionStatus === 'connecting' ? 'Connecting...' :
-         'Disconnected'}
+        {connectionStatus === 'connected' ? 'En Vivo' :
+         connectionStatus === 'connecting' ? 'Conectando...' :
+         'Desconectado'}
       </div>
 
       {/* Transcript overlay (for development/testing) */}
       {transcript.length > 0 && (
         <div className="absolute top-20 right-4 bg-black/70 backdrop-blur-sm text-white p-4 rounded-lg max-w-md max-h-64 overflow-y-auto">
-          <h3 className="font-bold mb-2 text-sm">Conversation:</h3>
+          <h3 className="font-bold mb-2 text-sm">Conversación:</h3>
           {transcript.map((msg, idx) => (
             <div key={idx} className={`mb-2 text-sm ${msg.role === 'user' ? 'text-blue-300' : 'text-green-300'}`}>
-              <strong>{msg.role === 'user' ? 'Child' : 'Santa'}:</strong> {msg.text}
+              <strong>{msg.role === 'user' ? 'Niño' : 'Santa'}:</strong> {msg.text}
             </div>
           ))}
         </div>
@@ -276,7 +289,7 @@ export function AvatarChat({ childInfo, onSessionEnd }: AvatarChatProps) {
               ? 'bg-red-600 hover:bg-red-700'
               : 'bg-white/90 hover:bg-white backdrop-blur-sm'
           }`}
-          title={isMuted ? 'Unmute' : 'Mute'}
+          title={isMuted ? 'Activar Micrófono' : 'Silenciar'}
         >
           {isMuted ? (
             <MicOff className="w-7 h-7 text-white" />
@@ -288,7 +301,7 @@ export function AvatarChat({ childInfo, onSessionEnd }: AvatarChatProps) {
         <button
           onClick={handleEndCall}
           className="rounded-full w-16 h-16 bg-red-600 hover:bg-red-700 flex items-center justify-center transition-all duration-200"
-          title="End Call"
+          title="Terminar Llamada"
         >
           <PhoneOff className="w-7 h-7 text-white" />
         </button>
@@ -297,7 +310,7 @@ export function AvatarChat({ childInfo, onSessionEnd }: AvatarChatProps) {
       {/* Instructions overlay */}
       <div className="absolute bottom-32 left-0 right-0 flex justify-center">
         <div className="bg-black/60 backdrop-blur-sm text-white px-6 py-3 rounded-full text-sm">
-          🎤 Speak naturally to chat with Santa!
+          🎤 ¡Habla naturalmente para chatear con Santa!
         </div>
       </div>
     </div>

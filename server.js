@@ -354,7 +354,11 @@ Safety rules:
 
         console.log('Calling HeyGen API to create context...');
 
-        // CREATE new context for this child
+        // CREATE new context for this child with timestamp for uniqueness
+        const timestamp = Date.now();
+        const contextName = `Santa context for ${child_name} - ${timestamp}`;
+        const openingText = `Ho ho ho! ¡Hola ${child_name}! ¡Feliz Navidad desde el Polo Norte!`;
+
         const contextResponse = await fetch(`${HEYGEN_API_URL}/v1/contexts`, {
           method: 'POST',
           headers: {
@@ -362,8 +366,9 @@ Safety rules:
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            name: `Santa context for ${child_name}`,
-            context: contextText,
+            name: contextName,
+            prompt: contextText,
+            opening_text: openingText
           }),
         });
 
@@ -373,7 +378,7 @@ Safety rules:
 
         if (contextResponse.ok) {
           const contextData = JSON.parse(contextResponseText);
-          contextId = contextData.data?.context_id || contextData.context_id;
+          contextId = contextData.data?.id || contextData.id;
           console.log('✅ Context created successfully:', contextId);
         } else {
           console.error('❌ Failed to create context:', contextResponseText);
@@ -490,7 +495,8 @@ app.post('/api/test-create-context', async (req, res) => {
       return res.status(500).json({ error: 'HeyGen API key not configured' });
     }
 
-    // Hardcoded test context
+    // Hardcoded test context with timestamp to ensure uniqueness
+    const timestamp = Date.now();
     const testContext = `
 You are Santa Claus speaking with Maria, age 7, from Mexico City.
 
@@ -514,8 +520,9 @@ Guidelines:
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        name: 'TEST - Santa context for Maria',
-        context: testContext,
+        name: `TEST - Santa context for Maria ${timestamp}`,
+        prompt: testContext,
+        opening_text: 'Ho ho ho! Hola Maria! ¡Feliz Navidad desde el Polo Norte!'
       }),
     });
 
@@ -532,7 +539,7 @@ Guidelines:
     }
 
     const data = JSON.parse(responseText);
-    const contextId = data.data?.context_id || data.context_id;
+    const contextId = data.data?.id || data.id;
 
     console.log('✅ Context created successfully!');
     console.log('Context ID:', contextId);

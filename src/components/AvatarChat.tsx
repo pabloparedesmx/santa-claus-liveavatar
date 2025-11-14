@@ -60,6 +60,7 @@ export function AvatarChat({ childInfo, contextId, onSessionEnd }: AvatarChatPro
       // Get environment variables
       const avatarId = import.meta.env.VITE_HEYGEN_SANTA_AVATAR_ID;
       const voiceId = import.meta.env.VITE_HEYGEN_SANTA_VOICE_ID;
+
       // Use dynamic contextId from props (personalized for this child)
       // Fallback to static context_id from .env if not provided
       const dynamicContextId = contextId || import.meta.env.VITE_HEYGEN_SANTA_CONTEXT_ID;
@@ -69,10 +70,12 @@ export function AvatarChat({ childInfo, contextId, onSessionEnd }: AvatarChatPro
       }
 
       // Create HeyGen session token via backend
-      console.log('Creating HeyGen session via backend...');
+      console.log('=== INITIALIZING AVATAR SESSION ===');
       console.log('Child info:', childInfo);
-      console.log('Using context_id:', dynamicContextId);
-      console.log('Context source:', contextId ? 'DYNAMIC (personalized)' : 'FALLBACK (.env)');
+      console.log('Context ID from props:', contextId || 'NOT PROVIDED');
+      console.log('Context ID from .env:', import.meta.env.VITE_HEYGEN_SANTA_CONTEXT_ID || 'NOT SET');
+      console.log('Using context_id:', dynamicContextId || 'NONE');
+      console.log('Context source:', contextId ? '🎯 DYNAMIC (personalized)' : '⚠️ FALLBACK (.env)');
 
       const { session_token } = await createHeyGenSession({
         mode: 'FULL',
@@ -83,6 +86,8 @@ export function AvatarChat({ childInfo, contextId, onSessionEnd }: AvatarChatPro
           language: 'en',
         },
       });
+
+      console.log('✅ Session token received');
 
       console.log('Session token received, initializing LiveAvatar...');
 

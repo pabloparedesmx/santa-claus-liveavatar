@@ -117,6 +117,8 @@ function App() {
       if (data.context_id) {
         setHeygenContextId(data.context_id);
         console.log('✅ Context ID received:', data.context_id);
+      } else {
+        console.warn('⚠️ No context_id received from backend');
       }
 
       // Show waiting screen

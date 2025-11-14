@@ -321,7 +321,8 @@ app.post('/api/session/:checkout_session_id/update', async (req, res) => {
     }
 
     // Create HeyGen context with child information
-    console.log('Creating HeyGen context for child...');
+    console.log('=== CREATING HEYGEN CONTEXT ===');
+    console.log('Child name:', child_name);
     let contextId = '';
 
     if (API_KEY) {
@@ -351,7 +352,9 @@ Safety rules:
 - Never make promises about specific gifts or guarantee wishes
         `.trim();
 
-        // Create context in HeyGen
+        console.log('Calling HeyGen API to create context...');
+
+        // CREATE new context for this child
         const contextResponse = await fetch(`${HEYGEN_API_URL}/v1/contexts`, {
           method: 'POST',
           headers: {
@@ -364,18 +367,23 @@ Safety rules:
           }),
         });
 
+        const contextResponseText = await contextResponse.text();
+        console.log('HeyGen context API status:', contextResponse.status);
+        console.log('HeyGen context API response:', contextResponseText);
+
         if (contextResponse.ok) {
-          const contextData = await contextResponse.json();
+          const contextData = JSON.parse(contextResponseText);
           contextId = contextData.data?.context_id || contextData.context_id;
-          console.log('✅ Context created:', contextId);
+          console.log('✅ Context created successfully:', contextId);
         } else {
-          const errorText = await contextResponse.text();
-          console.warn('⚠️ Failed to create context:', errorText);
+          console.error('❌ Failed to create context:', contextResponseText);
         }
       } catch (contextError) {
-        console.error('⚠️ Error creating context:', contextError);
+        console.error('❌ Error creating context:', contextError);
         // Continue even if context creation fails
       }
+    } else {
+      console.warn('⚠️ No API_KEY found, skipping context creation');
     }
 
     // Update session metadata
@@ -392,6 +400,9 @@ Safety rules:
     });
 
     console.log('✅ Session updated with child info:', checkout_session_id);
+    if (contextId) {
+      console.log('✅ Context ID saved:', contextId);
+    }
 
     // TODO: Also update in Supabase when we add it
 

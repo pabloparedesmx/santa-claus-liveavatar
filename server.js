@@ -481,6 +481,75 @@ app.post('/api/create-session', async (req, res) => {
   }
 });
 
+// TEST endpoint to create a context manually
+app.post('/api/test-create-context', async (req, res) => {
+  try {
+    console.log('=== TEST: Creating HeyGen Context ===');
+
+    if (!API_KEY) {
+      return res.status(500).json({ error: 'HeyGen API key not configured' });
+    }
+
+    // Hardcoded test context
+    const testContext = `
+You are Santa Claus speaking with Maria, age 7, from Mexico City.
+
+Child's wish list: A bicycle and a doll
+How they've been this year: Very kind to her siblings
+
+Guidelines:
+- Be warm, jolly, and encouraging in Spanish (speak Spanish!)
+- Reference their wishes naturally in conversation
+- Keep responses concise (2-3 sentences)
+- Use "Ho ho ho!" occasionally
+    `.trim();
+
+    console.log('Test context text length:', testContext.length);
+    console.log('Calling HeyGen API...');
+
+    const response = await fetch(`${HEYGEN_API_URL}/v1/contexts`, {
+      method: 'POST',
+      headers: {
+        'X-API-KEY': API_KEY,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: 'TEST - Santa context for Maria',
+        context: testContext,
+      }),
+    });
+
+    const responseText = await response.text();
+    console.log('HeyGen response status:', response.status);
+    console.log('HeyGen response body:', responseText);
+
+    if (!response.ok) {
+      return res.status(response.status).json({
+        error: 'HeyGen API error',
+        status: response.status,
+        response: responseText
+      });
+    }
+
+    const data = JSON.parse(responseText);
+    const contextId = data.data?.context_id || data.context_id;
+
+    console.log('✅ Context created successfully!');
+    console.log('Context ID:', contextId);
+
+    res.json({
+      success: true,
+      context_id: contextId,
+      message: 'Context created! Go to HeyGen dashboard to verify.',
+      heygen_response: data
+    });
+
+  } catch (error) {
+    console.error('❌ Error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', apiKeyConfigured: !!API_KEY });

@@ -184,6 +184,7 @@ app.get('/api/session/:checkout_session_id', async (req, res) => {
       plan_type: session.metadata.plan_type,
       time_limit_minutes: parseInt(session.metadata.time_limit_minutes),
       heygen_credits: parseInt(session.metadata.heygen_credits),
+      heygen_context_id: session.metadata.heygen_context_id || '',
       child_info: {
         name: session.metadata.child_name || '',
         age: session.metadata.child_age ? parseInt(session.metadata.child_age) : null,
@@ -197,6 +198,101 @@ app.get('/api/session/:checkout_session_id', async (req, res) => {
 
   } catch (error) {
     console.error('Error retrieving session:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Create HeyGen context with child information
+app.post('/api/create-context', async (req, res) => {
+  try {
+    const {
+      child_name,
+      child_age,
+      child_location,
+      wish_list,
+      behavior_notes
+    } = req.body;
+
+    if (!child_name) {
+      return res.status(400).json({ error: 'Child name is required' });
+    }
+
+    if (!API_KEY) {
+      return res.status(500).json({ error: 'HeyGen API key not configured' });
+    }
+
+    // Format the Santa context text
+    const contextText = `
+You are Santa Claus speaking with ${child_name}${child_age ? `, age ${child_age}` : ''}${child_location ? `, from ${child_location}` : ''}.
+
+${wish_list ? `Child's wish list: ${wish_list}` : ''}
+${behavior_notes ? `How they've been this year: ${behavior_notes}` : ''}
+
+Guidelines:
+- Be warm, jolly, and encouraging in Spanish (speak Spanish!)
+- Reference their wishes naturally in conversation
+- Praise good behavior and encourage continued kindness
+- Ask engaging questions about their year, school, friends, hobbies
+- Keep responses concise (2-3 sentences) to maintain engagement
+- Use "Ho ho ho!" occasionally but not excessively
+- If unsure about something, stay in character and redirect warmly
+- Aim for a 5-10 minute conversation with a natural conclusion
+- End by promising to deliver presents on Christmas Eve and mentioning you'll send a special letter
+
+Safety rules:
+- Never ask for personal information beyond what parent provided
+- Avoid topics: politics, religion, scary content
+- If child mentions sadness/problems, respond with empathy and redirect to positive topics
+- Never make promises about specific gifts or guarantee wishes
+    `.trim();
+
+    console.log('Creating HeyGen context for:', child_name);
+
+    // Create context in HeyGen
+    const response = await fetch(`${HEYGEN_API_URL}/v1/contexts`, {
+      method: 'POST',
+      headers: {
+        'X-API-KEY': API_KEY,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: `Santa context for ${child_name}`,
+        context: contextText,
+      }),
+    });
+
+    const responseText = await response.text();
+    console.log('HeyGen context API response:', responseText);
+
+    if (!response.ok) {
+      let errorData;
+      try {
+        errorData = JSON.parse(responseText);
+      } catch (e) {
+        errorData = { message: responseText };
+      }
+      const errorMessage = errorData?.message || errorData?.error || 'Failed to create context';
+      console.error('HeyGen context API error:', errorMessage);
+      return res.status(response.status).json({ error: errorMessage, details: errorData });
+    }
+
+    const data = JSON.parse(responseText);
+    const contextId = data.data?.context_id || data.context_id;
+
+    if (!contextId) {
+      console.error('No context_id in response:', data);
+      return res.status(500).json({ error: 'No context_id returned from HeyGen' });
+    }
+
+    console.log('✅ Context created successfully:', contextId);
+
+    res.json({
+      context_id: contextId,
+      success: true
+    });
+
+  } catch (error) {
+    console.error('Error creating context:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -224,6 +320,64 @@ app.post('/api/session/:checkout_session_id/update', async (req, res) => {
       return res.status(400).json({ error: 'Payment not completed' });
     }
 
+    // Create HeyGen context with child information
+    console.log('Creating HeyGen context for child...');
+    let contextId = '';
+
+    if (API_KEY) {
+      try {
+        // Format the Santa context text
+        const contextText = `
+You are Santa Claus speaking with ${child_name}${child_age ? `, age ${child_age}` : ''}${child_location ? `, from ${child_location}` : ''}.
+
+${wish_list ? `Child's wish list: ${wish_list}` : ''}
+${behavior_notes ? `How they've been this year: ${behavior_notes}` : ''}
+
+Guidelines:
+- Be warm, jolly, and encouraging in Spanish (speak Spanish!)
+- Reference their wishes naturally in conversation
+- Praise good behavior and encourage continued kindness
+- Ask engaging questions about their year, school, friends, hobbies
+- Keep responses concise (2-3 sentences) to maintain engagement
+- Use "Ho ho ho!" occasionally but not excessively
+- If unsure about something, stay in character and redirect warmly
+- Aim for a 5-10 minute conversation with a natural conclusion
+- End by promising to deliver presents on Christmas Eve and mentioning you'll send a special letter
+
+Safety rules:
+- Never ask for personal information beyond what parent provided
+- Avoid topics: politics, religion, scary content
+- If child mentions sadness/problems, respond with empathy and redirect to positive topics
+- Never make promises about specific gifts or guarantee wishes
+        `.trim();
+
+        // Create context in HeyGen
+        const contextResponse = await fetch(`${HEYGEN_API_URL}/v1/contexts`, {
+          method: 'POST',
+          headers: {
+            'X-API-KEY': API_KEY,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: `Santa context for ${child_name}`,
+            context: contextText,
+          }),
+        });
+
+        if (contextResponse.ok) {
+          const contextData = await contextResponse.json();
+          contextId = contextData.data?.context_id || contextData.context_id;
+          console.log('✅ Context created:', contextId);
+        } else {
+          const errorText = await contextResponse.text();
+          console.warn('⚠️ Failed to create context:', errorText);
+        }
+      } catch (contextError) {
+        console.error('⚠️ Error creating context:', contextError);
+        // Continue even if context creation fails
+      }
+    }
+
     // Update session metadata
     await stripe.checkout.sessions.update(checkout_session_id, {
       metadata: {
@@ -233,6 +387,7 @@ app.post('/api/session/:checkout_session_id/update', async (req, res) => {
         child_location: child_location || '',
         wish_list: wish_list || '',
         behavior_notes: behavior_notes || '',
+        heygen_context_id: contextId || '',
       },
     });
 
@@ -240,7 +395,10 @@ app.post('/api/session/:checkout_session_id/update', async (req, res) => {
 
     // TODO: Also update in Supabase when we add it
 
-    res.json({ success: true });
+    res.json({
+      success: true,
+      context_id: contextId
+    });
 
   } catch (error) {
     console.error('Error updating session:', error);

@@ -11,6 +11,7 @@ interface AvatarChatProps {
     wishList?: string;
     behaviorNotes?: string;
   };
+  contextId?: string;
   onSessionEnd?: (transcript: string) => void;
 }
 
@@ -20,7 +21,7 @@ interface Message {
   timestamp: number;
 }
 
-export function AvatarChat({ childInfo, onSessionEnd }: AvatarChatProps) {
+export function AvatarChat({ childInfo, contextId, onSessionEnd }: AvatarChatProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const sessionRef = useRef<LiveAvatarSession | null>(null);
   const [isConnecting, setIsConnecting] = useState(true);
@@ -59,7 +60,9 @@ export function AvatarChat({ childInfo, onSessionEnd }: AvatarChatProps) {
       // Get environment variables
       const avatarId = import.meta.env.VITE_HEYGEN_SANTA_AVATAR_ID;
       const voiceId = import.meta.env.VITE_HEYGEN_SANTA_VOICE_ID;
-      const contextId = import.meta.env.VITE_HEYGEN_SANTA_CONTEXT_ID;
+      // Use dynamic contextId from props (personalized for this child)
+      // Fallback to static context_id from .env if not provided
+      const dynamicContextId = contextId || import.meta.env.VITE_HEYGEN_SANTA_CONTEXT_ID;
 
       if (!avatarId || !voiceId) {
         throw new Error('Falta la configuración de API de HeyGen. Por favor revisa tu archivo .env.');
@@ -68,14 +71,15 @@ export function AvatarChat({ childInfo, onSessionEnd }: AvatarChatProps) {
       // Create HeyGen session token via backend
       console.log('Creating HeyGen session via backend...');
       console.log('Child info:', childInfo);
-      console.log('Using context_id:', contextId);
+      console.log('Using context_id:', dynamicContextId);
+      console.log('Context source:', contextId ? 'DYNAMIC (personalized)' : 'FALLBACK (.env)');
 
       const { session_token } = await createHeyGenSession({
         mode: 'FULL',
         avatar_id: avatarId,
         avatar_persona: {
           voice_id: voiceId,
-          ...(contextId && { context_id: contextId }),
+          ...(dynamicContextId && { context_id: dynamicContextId }),
           language: 'en',
         },
       });

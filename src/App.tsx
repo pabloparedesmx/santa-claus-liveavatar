@@ -24,6 +24,7 @@ function App() {
   const [sessionTranscript, setSessionTranscript] = useState('');
   const [stripeSessionId, setStripeSessionId] = useState<string | null>(null);
   const [isLoadingSession, setIsLoadingSession] = useState(false);
+  const [heygenContextId, setHeygenContextId] = useState<string>('');
 
   // Check for session_id in URL (redirect from Stripe)
   useEffect(() => {
@@ -109,7 +110,14 @@ function App() {
         throw new Error('Failed to update session');
       }
 
+      const data = await response.json();
       console.log('✅ Child info saved');
+
+      // Store the context_id if available
+      if (data.context_id) {
+        setHeygenContextId(data.context_id);
+        console.log('✅ Context ID received:', data.context_id);
+      }
 
       // Show waiting screen
       setAppState('waiting');
@@ -271,7 +279,7 @@ function App() {
 
   // Avatar Chat State
   if (appState === 'chat') {
-    return <AvatarChat childInfo={childInfo} onSessionEnd={handleSessionEnd} />;
+    return <AvatarChat childInfo={childInfo} contextId={heygenContextId} onSessionEnd={handleSessionEnd} />;
   }
 
   // Completed State

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Mic, MicOff, PhoneOff, Loader2 } from 'lucide-react';
+import { Mic, MicOff, PhoneOff, Loader2, MessageSquare, Send } from 'lucide-react';
 import { LiveAvatarSession, SessionState, SessionEvent, AgentEventsEnum, VoiceChatEvent } from '@heygen/liveavatar-web-sdk';
 import { createHeyGenSession } from '../lib/heygen';
 
@@ -30,6 +30,8 @@ export function AvatarChat({ childInfo, contextId, onSessionEnd }: AvatarChatPro
   const [transcript, setTranscript] = useState<Message[]>([]);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected'>('connecting');
+  const [isChatMode, setIsChatMode] = useState(false);
+  const [chatInput, setChatInput] = useState('');
 
   useEffect(() => {
     initializeSession();
@@ -191,6 +193,44 @@ export function AvatarChat({ childInfo, contextId, onSessionEnd }: AvatarChatPro
     }
   }
 
+  function toggleChatMode() {
+    const newMode = !isChatMode;
+    setIsChatMode(newMode);
+
+    if (sessionRef.current) {
+      if (newMode) {
+        // Switching to chat mode - mute voice
+        sessionRef.current.voiceChat.mute();
+        console.log('💬 Switched to chat mode');
+      } else {
+        // Switching to voice mode - unmute if not manually muted
+        if (!isMuted) {
+          sessionRef.current.voiceChat.unmute();
+        }
+        console.log('🎤 Switched to voice mode');
+      }
+    }
+  }
+
+  function sendChatMessage() {
+    if (!chatInput.trim() || !sessionRef.current) return;
+
+    console.log('📤 Sending text message:', chatInput);
+
+    // Send message to avatar using text chat
+    sessionRef.current.message(chatInput);
+
+    // Add to transcript
+    setTranscript(prev => [...prev, {
+      role: 'user',
+      text: chatInput,
+      timestamp: Date.now()
+    }]);
+
+    // Clear input
+    setChatInput('');
+  }
+
   async function handleEndCall() {
     if (confirm('¿Estás seguro que quieres terminar la llamada con Santa?')) {
       const fullTranscript = transcript.map(m => `${m.role === 'user' ? 'Niño' : 'Santa'}: ${m.text}`).join('\n');
@@ -283,23 +323,108 @@ export function AvatarChat({ childInfo, contextId, onSessionEnd }: AvatarChatPro
         </div>
       )}
 
-      {/* Controls */}
-      <div className="absolute bottom-8 left-0 right-0 flex justify-center items-center gap-6">
+      {/* Chat Mode Toggle Button (Bottom Left) */}
+      <div className="absolute bottom-8 left-8">
         <button
-          onClick={toggleMute}
-          className={`rounded-full w-16 h-16 flex items-center justify-center transition-all duration-200 ${
-            isMuted
-              ? 'bg-red-600 hover:bg-red-700'
-              : 'bg-white/90 hover:bg-white backdrop-blur-sm'
-          }`}
-          title={isMuted ? 'Activar Micrófono' : 'Silenciar'}
+          onClick={toggleChatMode}
+          className="bg-white/90 hover:bg-white backdrop-blur-sm text-gray-900 font-semibold px-6 py-3 rounded-full transition-all duration-200 shadow-lg flex items-center gap-2"
+          title={isChatMode ? 'Cambiar a Modo Voz' : 'Cambiar a Modo Chat'}
         >
-          {isMuted ? (
-            <MicOff className="w-7 h-7 text-white" />
+          {isChatMode ? (
+            <>
+              <Mic className="w-5 h-5" />
+              <span>Modo Voz</span>
+            </>
           ) : (
-            <Mic className="w-7 h-7 text-gray-900" />
+            <>
+              <MessageSquare className="w-5 h-5" />
+              <span>Modo Chat</span>
+            </>
           )}
         </button>
+      </div>
+
+      {/* Chat Bubble */}
+      {isChatMode && (
+        <div className="absolute bottom-24 right-8 w-96 bg-white rounded-2xl shadow-2xl overflow-hidden">
+          {/* Chat Header */}
+          <div className="bg-christmas-red text-white px-6 py-4">
+            <h3 className="font-bold text-lg">💬 Chat con Santa</h3>
+            <p className="text-sm text-white/80">Escribe tu mensaje</p>
+          </div>
+
+          {/* Chat Messages */}
+          <div className="h-96 overflow-y-auto p-4 bg-gray-50">
+            {transcript.length === 0 ? (
+              <div className="text-center text-gray-400 mt-20">
+                <MessageSquare className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                <p>Escribe un mensaje para empezar</p>
+              </div>
+            ) : (
+              transcript.map((msg, idx) => (
+                <div
+                  key={idx}
+                  className={`mb-3 ${msg.role === 'user' ? 'text-right' : 'text-left'}`}
+                >
+                  <div
+                    className={`inline-block px-4 py-2 rounded-lg max-w-xs ${
+                      msg.role === 'user'
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-white text-gray-900 border-2 border-christmas-red'
+                    }`}
+                  >
+                    <p className="text-sm font-semibold mb-1">
+                      {msg.role === 'user' ? childInfo.name : 'Santa 🎅'}
+                    </p>
+                    <p>{msg.text}</p>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* Chat Input */}
+          <div className="p-4 bg-white border-t-2 border-gray-200">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={chatInput}
+                onChange={(e) => setChatInput(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && sendChatMessage()}
+                placeholder="Escribe tu mensaje..."
+                className="flex-1 px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-christmas-red focus:outline-none"
+              />
+              <button
+                onClick={sendChatMessage}
+                disabled={!chatInput.trim()}
+                className="bg-christmas-red hover:bg-red-700 text-white px-6 py-3 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Send className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Controls */}
+      <div className="absolute bottom-8 left-0 right-0 flex justify-center items-center gap-6">
+        {!isChatMode && (
+          <button
+            onClick={toggleMute}
+            className={`rounded-full w-16 h-16 flex items-center justify-center transition-all duration-200 ${
+              isMuted
+                ? 'bg-red-600 hover:bg-red-700'
+                : 'bg-white/90 hover:bg-white backdrop-blur-sm'
+            }`}
+            title={isMuted ? 'Activar Micrófono' : 'Silenciar'}
+          >
+            {isMuted ? (
+              <MicOff className="w-7 h-7 text-white" />
+            ) : (
+              <Mic className="w-7 h-7 text-gray-900" />
+            )}
+          </button>
+        )}
 
         <button
           onClick={handleEndCall}
@@ -311,11 +436,13 @@ export function AvatarChat({ childInfo, contextId, onSessionEnd }: AvatarChatPro
       </div>
 
       {/* Instructions overlay */}
-      <div className="absolute bottom-32 left-0 right-0 flex justify-center">
-        <div className="bg-black/60 backdrop-blur-sm text-white px-6 py-3 rounded-full text-sm">
-          🎤 ¡Habla naturalmente para chatear con Santa!
+      {!isChatMode && (
+        <div className="absolute bottom-32 left-0 right-0 flex justify-center">
+          <div className="bg-black/60 backdrop-blur-sm text-white px-6 py-3 rounded-full text-sm">
+            🎤 ¡Habla naturalmente para chatear con Santa!
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

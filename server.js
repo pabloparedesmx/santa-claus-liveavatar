@@ -317,8 +317,14 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', apiKeyConfigured: !!API_KEY });
 });
 
-app.listen(PORT, () => {
-  console.log(`\n🎅 Santa Backend Server running on http://localhost:${PORT}`);
-  console.log(`API Key configured: ${!!API_KEY}`);
-  console.log(`Ready to create HeyGen sessions!\n`);
-});
+// Only start server if not in Vercel serverless environment
+if (process.env.VERCEL !== '1') {
+  app.listen(PORT, () => {
+    console.log(`\n🎅 Santa Backend Server running on http://localhost:${PORT}`);
+    console.log(`API Key configured: ${!!API_KEY}`);
+    console.log(`Ready to create HeyGen sessions!\n`);
+  });
+}
+
+// Export for Vercel serverless functions
+export default app;

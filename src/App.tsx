@@ -14,7 +14,6 @@ type AppState = 'landing' | 'form' | 'waiting' | 'chat' | 'completed';
 
 function App() {
   const [appState, setAppState] = useState<AppState>('landing');
-  const [customerEmail, setCustomerEmail] = useState('');
   const [childInfo, setChildInfo] = useState<ChildInfo>({
     name: '',
     age: null,
@@ -50,9 +49,6 @@ function App() {
       }
 
       const data = await response.json();
-
-      // Load session data
-      setCustomerEmail(data.customer_email || '');
 
       // If child info already exists (shouldn't happen in new flow, but just in case)
       if (data.child_info?.name) {

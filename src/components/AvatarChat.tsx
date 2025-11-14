@@ -29,7 +29,6 @@ export function AvatarChat({ childInfo, onSessionEnd }: AvatarChatProps) {
   const [transcript, setTranscript] = useState<Message[]>([]);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected'>('connecting');
-  const [isAvatarTalking, setIsAvatarTalking] = useState(false);
 
   useEffect(() => {
     initializeSession();
@@ -111,12 +110,10 @@ export function AvatarChat({ childInfo, onSessionEnd }: AvatarChatProps) {
 
       session.on(AgentEventsEnum.AVATAR_SPEAK_STARTED, () => {
         console.log('🎅 Santa started speaking');
-        setIsAvatarTalking(true);
       });
 
       session.on(AgentEventsEnum.AVATAR_SPEAK_ENDED, (data: any) => {
         console.log('🎅 Santa stopped speaking:', data);
-        setIsAvatarTalking(false);
         if (data?.text) {
           console.log('💬 Santa said:', data.text);
           setTranscript(prev => [...prev, {
@@ -129,12 +126,10 @@ export function AvatarChat({ childInfo, onSessionEnd }: AvatarChatProps) {
 
       session.on(AgentEventsEnum.USER_SPEAK_STARTED, () => {
         console.log('👤 User started speaking');
-        setIsUserTalking(true);
       });
 
       session.on(AgentEventsEnum.USER_SPEAK_ENDED, (data: any) => {
         console.log('👤 User stopped speaking:', data);
-        setIsUserTalking(false);
         if (data?.text) {
           console.log('📝 User said:', data.text);
           setTranscript(prev => [...prev, {

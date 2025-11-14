@@ -100,7 +100,7 @@ export function Landing({ onStartJourney }: LandingProps) {
             <div className="hidden md:block">
               <div className="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-white/20">
                 <img
-                  src="https://images.unsplash.com/photo-1512389142860-9c449e58a543?w=800&q=80"
+                  src="/image (2).png"
                   alt="Santa Claus en videollamada"
                   className="w-full h-auto"
                 />

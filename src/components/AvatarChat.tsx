@@ -196,18 +196,23 @@ export function AvatarChat({ childInfo, contextId, onSessionEnd }: AvatarChatPro
   function toggleChatMode() {
     const newMode = !isChatMode;
     setIsChatMode(newMode);
+    console.log('🔄 Toggling chat mode:', newMode ? 'CHAT' : 'VOICE');
 
     if (sessionRef.current) {
-      if (newMode) {
-        // Switching to chat mode - mute voice
-        sessionRef.current.voiceChat.mute();
-        console.log('💬 Switched to chat mode');
-      } else {
-        // Switching to voice mode - unmute if not manually muted
-        if (!isMuted) {
-          sessionRef.current.voiceChat.unmute();
+      try {
+        if (newMode) {
+          // Switching to chat mode - mute voice
+          sessionRef.current.voiceChat?.mute();
+          console.log('💬 Switched to chat mode');
+        } else {
+          // Switching to voice mode - unmute if not manually muted
+          if (!isMuted) {
+            sessionRef.current.voiceChat?.unmute();
+          }
+          console.log('🎤 Switched to voice mode');
         }
-        console.log('🎤 Switched to voice mode');
+      } catch (error) {
+        console.error('Error toggling chat mode:', error);
       }
     }
   }
@@ -273,11 +278,11 @@ export function AvatarChat({ childInfo, contextId, onSessionEnd }: AvatarChatPro
   }
 
   return (
-    <div className="relative h-screen w-full bg-black overflow-hidden">
-      {/* Video element */}
+    <div className="fixed inset-0 w-full h-full bg-black overflow-hidden" style={{ height: '100vh', height: '100dvh' }}>
+      {/* Video element - positioned to show Santa on the right for mobile */}
       <video
         ref={videoRef}
-        className="w-full h-full object-cover"
+        className="absolute inset-0 w-full h-full object-cover md:object-center object-[75%_center]"
         autoPlay
         playsInline
         poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600'%3E%3Crect fill='%23DC2626' width='800' height='600'/%3E%3Ctext x='400' y='300' text-anchor='middle' font-size='64' fill='white' font-family='Arial'%3E🎅%3C/text%3E%3C/svg%3E"
@@ -294,13 +299,13 @@ export function AvatarChat({ childInfo, contextId, onSessionEnd }: AvatarChatPro
         </div>
       )}
 
-      {/* Timer */}
-      <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-sm text-white px-4 py-2 rounded-lg font-mono text-lg">
+      {/* Timer - iPhone style top bar */}
+      <div className="absolute top-safe top-4 left-4 md:left-4 bg-black/60 backdrop-blur-sm text-white px-3 py-1.5 md:px-4 md:py-2 rounded-lg font-mono text-sm md:text-lg">
         {formatTime(elapsedTime)}
       </div>
 
-      {/* Connection status */}
-      <div className={`absolute top-4 right-4 px-4 py-2 rounded-full text-sm font-semibold ${
+      {/* Connection status - iPhone style */}
+      <div className={`absolute top-safe top-4 right-4 md:right-4 px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-semibold ${
         connectionStatus === 'connected' ? 'bg-green-500' :
         connectionStatus === 'connecting' ? 'bg-yellow-500' :
         'bg-red-500'
@@ -311,9 +316,9 @@ export function AvatarChat({ childInfo, contextId, onSessionEnd }: AvatarChatPro
          'Desconectado'}
       </div>
 
-      {/* Transcript overlay (for development/testing) */}
+      {/* Transcript overlay (hidden on mobile) */}
       {transcript.length > 0 && (
-        <div className="absolute top-20 right-4 bg-black/70 backdrop-blur-sm text-white p-4 rounded-lg max-w-md max-h-64 overflow-y-auto">
+        <div className="hidden md:block absolute top-20 right-4 bg-black/70 backdrop-blur-sm text-white p-4 rounded-lg max-w-md max-h-64 overflow-y-auto">
           <h3 className="font-bold mb-2 text-sm">Conversación:</h3>
           {transcript.map((msg, idx) => (
             <div key={idx} className={`mb-2 text-sm ${msg.role === 'user' ? 'text-blue-300' : 'text-green-300'}`}>
@@ -323,8 +328,8 @@ export function AvatarChat({ childInfo, contextId, onSessionEnd }: AvatarChatPro
         </div>
       )}
 
-      {/* Chat Mode Toggle Button (Bottom Left) */}
-      <div className="absolute bottom-8 left-8">
+      {/* Chat Mode Toggle Button (Desktop only - Bottom Left) */}
+      <div className="hidden md:block absolute bottom-8 left-8">
         <button
           onClick={toggleChatMode}
           className="bg-white/90 hover:bg-white backdrop-blur-sm text-gray-900 font-semibold px-6 py-3 rounded-full transition-all duration-200 shadow-lg flex items-center gap-2"
@@ -406,12 +411,12 @@ export function AvatarChat({ childInfo, contextId, onSessionEnd }: AvatarChatPro
         </div>
       )}
 
-      {/* Controls */}
-      <div className="absolute bottom-8 left-0 right-0 flex justify-center items-center gap-6">
+      {/* Controls - iPhone style bottom bar */}
+      <div className="absolute bottom-safe bottom-8 md:bottom-8 left-0 right-0 flex justify-center items-center gap-4 md:gap-6 px-4">
         {!isChatMode && (
           <button
             onClick={toggleMute}
-            className={`rounded-full w-16 h-16 flex items-center justify-center transition-all duration-200 ${
+            className={`rounded-full w-14 h-14 md:w-16 md:h-16 flex items-center justify-center transition-all duration-200 shadow-lg ${
               isMuted
                 ? 'bg-red-600 hover:bg-red-700'
                 : 'bg-white/90 hover:bg-white backdrop-blur-sm'
@@ -419,25 +424,25 @@ export function AvatarChat({ childInfo, contextId, onSessionEnd }: AvatarChatPro
             title={isMuted ? 'Activar Micrófono' : 'Silenciar'}
           >
             {isMuted ? (
-              <MicOff className="w-7 h-7 text-white" />
+              <MicOff className="w-6 h-6 md:w-7 md:h-7 text-white" />
             ) : (
-              <Mic className="w-7 h-7 text-gray-900" />
+              <Mic className="w-6 h-6 md:w-7 md:h-7 text-gray-900" />
             )}
           </button>
         )}
 
         <button
           onClick={handleEndCall}
-          className="rounded-full w-16 h-16 bg-red-600 hover:bg-red-700 flex items-center justify-center transition-all duration-200"
+          className="rounded-full w-14 h-14 md:w-16 md:h-16 bg-red-600 hover:bg-red-700 flex items-center justify-center transition-all duration-200 shadow-lg"
           title="Terminar Llamada"
         >
-          <PhoneOff className="w-7 h-7 text-white" />
+          <PhoneOff className="w-6 h-6 md:w-7 md:h-7 text-white" />
         </button>
       </div>
 
-      {/* Instructions overlay */}
+      {/* Instructions overlay - hidden on mobile */}
       {!isChatMode && (
-        <div className="absolute bottom-32 left-0 right-0 flex justify-center">
+        <div className="hidden md:flex absolute bottom-32 left-0 right-0 justify-center">
           <div className="bg-black/60 backdrop-blur-sm text-white px-6 py-3 rounded-full text-sm">
             🎤 ¡Habla naturalmente para chatear con Santa!
           </div>

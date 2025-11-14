@@ -83,7 +83,7 @@ export function AvatarChat({ childInfo, contextId, onSessionEnd }: AvatarChatPro
         avatar_persona: {
           voice_id: voiceId,
           ...(dynamicContextId && { context_id: dynamicContextId }),
-          language: 'en',
+          language: 'es',
         },
       });
 

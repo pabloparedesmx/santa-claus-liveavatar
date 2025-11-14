@@ -278,7 +278,7 @@ export function AvatarChat({ childInfo, contextId, onSessionEnd }: AvatarChatPro
   }
 
   return (
-    <div className="fixed inset-0 w-full h-full bg-black overflow-hidden" style={{ height: '100vh', height: '100dvh' }}>
+    <div className="fixed inset-0 w-full bg-black overflow-hidden" style={{ height: '100dvh' }}>
       {/* Video element - positioned to show Santa on the right for mobile */}
       <video
         ref={videoRef}

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Mic, MicOff, PhoneOff, Loader2 } from 'lucide-react';
 import { LiveAvatarSession, SessionState, SessionEvent, AgentEventsEnum, VoiceChatEvent } from '@heygen/liveavatar-web-sdk';
-import { createHeyGenSession, formatSantaContext } from '../lib/heygen';
+import { createHeyGenSession } from '../lib/heygen';
 
 interface AvatarChatProps {
   childInfo: {
@@ -30,7 +30,6 @@ export function AvatarChat({ childInfo, onSessionEnd }: AvatarChatProps) {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected'>('connecting');
   const [isAvatarTalking, setIsAvatarTalking] = useState(false);
-  const [isUserTalking, setIsUserTalking] = useState(false);
 
   useEffect(() => {
     initializeSession();

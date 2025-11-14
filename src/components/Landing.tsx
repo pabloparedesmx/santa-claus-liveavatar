@@ -1,12 +1,7 @@
 import { useState } from 'react';
-import { Sparkles, Video, Mail, Heart, Clock, Shield } from 'lucide-react';
+import { Heart, Clock, Shield } from 'lucide-react';
 
-interface LandingProps {
-  onStartJourney?: () => void; // Optional, not used anymore
-}
-
-export function Landing({ onStartJourney }: LandingProps) {
-  const [email, setEmail] = useState('');
+export function Landing() {
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleSelectPlan = async (plan: 'mini' | 'premium' | 'vip') => {

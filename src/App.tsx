@@ -11,11 +11,9 @@ interface ChildInfo {
 }
 
 type AppState = 'landing' | 'form' | 'waiting' | 'chat' | 'completed';
-type PlanType = 'mini' | 'premium' | 'vip';
 
 function App() {
   const [appState, setAppState] = useState<AppState>('landing');
-  const [selectedPlan, setSelectedPlan] = useState<PlanType>('premium');
   const [customerEmail, setCustomerEmail] = useState('');
   const [childInfo, setChildInfo] = useState<ChildInfo>({
     name: '',
@@ -54,7 +52,6 @@ function App() {
 
       // Load session data
       setCustomerEmail(data.customer_email || '');
-      setSelectedPlan(data.plan_type);
 
       // If child info already exists (shouldn't happen in new flow, but just in case)
       if (data.child_info?.name) {

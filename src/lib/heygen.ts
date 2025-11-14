@@ -1,6 +1,6 @@
 // HeyGen API integration utilities
 
-const BACKEND_API_URL = 'http://localhost:3001';
+const BACKEND_API_URL = import.meta.env.VITE_API_URL || '/api';
 
 export interface HeyGenSessionResponse {
   session_token: string;
@@ -27,7 +27,7 @@ export async function createHeyGenSession(
   options: CreateSessionOptions
 ): Promise<HeyGenSessionResponse> {
   try {
-    const response = await fetch(`${BACKEND_API_URL}/api/create-session`, {
+    const response = await fetch(`${BACKEND_API_URL}/create-session`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

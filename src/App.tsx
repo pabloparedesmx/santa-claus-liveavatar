@@ -42,7 +42,8 @@ function App() {
     try {
       setIsLoadingSession(true);
 
-      const response = await fetch(`http://localhost:3001/api/session/${sessionId}`);
+      const apiUrl = import.meta.env.VITE_API_URL || '/api';
+      const response = await fetch(`${apiUrl}/session/${sessionId}`);
 
       if (!response.ok) {
         throw new Error('Failed to load session');
@@ -93,7 +94,8 @@ function App() {
       setIsLoadingSession(true);
 
       // Update session with child information
-      const response = await fetch(`http://localhost:3001/api/session/${stripeSessionId}/update`, {
+      const apiUrl = import.meta.env.VITE_API_URL || '/api';
+      const response = await fetch(`${apiUrl}/session/${stripeSessionId}/update`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

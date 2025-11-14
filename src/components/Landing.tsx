@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Heart, Clock, Shield } from 'lucide-react';
+import { Heart, Clock, Shield, Video, Sparkles, Mail } from 'lucide-react';
 
 export function Landing() {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -9,7 +9,8 @@ export function Landing() {
       setIsProcessing(true);
 
       // Create Stripe checkout session
-      const response = await fetch('http://localhost:3001/api/create-checkout-session', {
+      const apiUrl = import.meta.env.VITE_API_URL || '/api';
+      const response = await fetch(`${apiUrl}/create-checkout-session`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

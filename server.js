@@ -28,25 +28,25 @@ const API_KEY = process.env.VITE_HEYGEN_API_KEY;
 // Plan configurations
 const PLANS = {
   mini: {
-    name: 'Mini Carta',
+    name: 'Plan Mini',
     price: 500, // $5 USD in cents
     time_minutes: 5,
     heygen_credits: 10,
     features: [
       'Videollamada de 5 minutos',
       'Conversación personalizada',
-      'Carta de Santa por email'
+      'Santa conoce sus deseos'
     ]
   },
   premium: {
-    name: 'Carta Premium',
+    name: 'Plan Premium',
     price: 1000, // $10 USD in cents
     time_minutes: 10,
     heygen_credits: 20,
     features: [
       'Videollamada de 10 minutos',
       'Conversación extendida',
-      'Carta premium por email',
+      'Más tiempo para conectar',
       'Mención de deseos específicos'
     ]
   },
@@ -57,10 +57,10 @@ const PLANS = {
     heygen_credits: 40,
     features: [
       'Videollamada de 20 minutos',
-      'Conversación profunda',
-      'Carta VIP personalizada',
-      'Video grabado de la llamada',
-      'Mención del nombre en video'
+      'Conversación profunda y personalizada',
+      'Experiencia VIP completa',
+      'Más temas y preguntas',
+      'La experiencia más completa'
     ]
   }
 };
@@ -86,7 +86,7 @@ app.post('/api/create-checkout-session', async (req, res) => {
             currency: 'usd',
             product_data: {
               name: plan.name,
-              description: `${plan.time_minutes} minutos con Santa + Carta personalizada`,
+              description: `Videollamada personalizada de ${plan.time_minutes} minutos con Santa Claus en vivo`,
               images: ['https://images.unsplash.com/photo-1512389142860-9c449e58a543?w=400'],
             },
             unit_amount: plan.price,
@@ -380,7 +380,7 @@ Instrucciones generales:
 - Haz preguntas interesantes sobre los detalles que los padres compartieron
 - Usa "¡Ho, Ho, Ho!" ocasionalmente pero no excesivamente (con H, no con J)
 - Si no estás seguro de algo, mantente en personaje y redirige con calidez
-- Termina prometiendo entregar regalos en Nochebuena y menciona que enviarás una carta especial
+- Termina prometiendo entregar regalos en Nochebuena y deseando una Feliz Navidad
 
 Reglas de seguridad:
 - Nunca pidas información personal más allá de lo que los padres proporcionaron

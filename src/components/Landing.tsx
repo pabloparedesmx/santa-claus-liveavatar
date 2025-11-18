@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Heart, Clock, Shield, Video, Sparkles, Mail } from 'lucide-react';
+import { Heart, Clock, Shield, Video, Sparkles } from 'lucide-react';
 
 export function Landing() {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -71,7 +71,7 @@ export function Landing() {
                   {isProcessing ? '⏳ Procesando...' : 'Comienza la Magia ✨'}
                 </button>
                 <p className="text-white/80 text-sm">
-                  Desde $45 MXN • Carta personalizada incluida
+                  Desde $5 USD • Videollamada en vivo
                 </p>
               </div>
 
@@ -144,12 +144,12 @@ export function Landing() {
 
             <div className="text-center">
               <div className="w-20 h-20 bg-christmas-gold rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
-                💌
+                ✨
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">3. Recibe una Carta Especial</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">3. Crea un Recuerdo Inolvidable</h3>
               <p className="text-gray-600">
-                Después de la llamada, recibe una carta personalizada de Santa por email.
-                ¡Imprímela y guárdala para siempre!
+                Tu hijo vivirá una experiencia mágica hablando con Santa en persona.
+                ¡Un momento que recordará para siempre!
               </p>
             </div>
           </div>
@@ -181,10 +181,10 @@ export function Landing() {
             </div>
 
             <div className="bg-white p-6 rounded-lg shadow-lg">
-              <Mail className="w-12 h-12 text-christmas-green mb-4" />
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Carta de Recuerdo</h3>
+              <Heart className="w-12 h-12 text-christmas-red mb-4" />
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Memoria Eterna</h3>
               <p className="text-gray-600">
-                Hermosa carta personalizada de Santa para imprimir y atesorar
+                Un momento mágico que tu hijo atesorará para siempre
               </p>
             </div>
 
@@ -226,11 +226,11 @@ export function Landing() {
           </p>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {/* Mini Carta */}
+            {/* Plan Mini */}
             <div className="bg-white rounded-2xl shadow-2xl p-8 transform hover:scale-105 transition-all">
               <div className="text-center mb-6">
                 <div className="text-4xl mb-3">🎁</div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Mini Carta</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Plan Mini</h3>
                 <div className="mb-2">
                   <span className="text-5xl font-bold text-christmas-red">$5</span>
                   <span className="text-gray-600 text-lg"> USD</span>
@@ -252,7 +252,7 @@ export function Landing() {
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="text-christmas-green text-lg">✓</span>
-                  <span className="text-gray-700 text-sm">Carta de Santa por email</span>
+                  <span className="text-gray-700 text-sm">Santa conoce sus deseos</span>
                 </div>
               </div>
 
@@ -265,14 +265,14 @@ export function Landing() {
               </button>
             </div>
 
-            {/* Carta Premium - POPULAR */}
+            {/* Plan Premium - POPULAR */}
             <div className="bg-white rounded-2xl shadow-2xl p-8 transform scale-105 border-4 border-christmas-gold relative">
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-christmas-gold text-white px-4 py-1 rounded-full text-sm font-bold">
                 MÁS POPULAR
               </div>
               <div className="text-center mb-6">
                 <div className="text-4xl mb-3">🎄</div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Carta Premium</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Plan Premium</h3>
                 <div className="mb-2">
                   <span className="text-5xl font-bold text-christmas-red">$10</span>
                   <span className="text-gray-600 text-lg"> USD</span>
@@ -294,7 +294,7 @@ export function Landing() {
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="text-christmas-green text-lg">✓</span>
-                  <span className="text-gray-700 text-sm">Carta premium por email</span>
+                  <span className="text-gray-700 text-sm">Más tiempo para conectar</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="text-christmas-green text-lg">✓</span>
@@ -333,19 +333,19 @@ export function Landing() {
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="text-christmas-green text-lg">✓</span>
-                  <span className="text-gray-700 text-sm">Conversación profunda</span>
+                  <span className="text-gray-700 text-sm">Conversación profunda y personalizada</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="text-christmas-green text-lg">✓</span>
-                  <span className="text-gray-700 text-sm">Carta VIP personalizada</span>
+                  <span className="text-gray-700 text-sm">Experiencia VIP completa</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="text-christmas-green text-lg">✓</span>
-                  <span className="text-gray-700 text-sm">Video grabado de la llamada</span>
+                  <span className="text-gray-700 text-sm">Más temas y preguntas</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="text-christmas-green text-lg">✓</span>
-                  <span className="text-gray-700 text-sm">Mención del nombre en video</span>
+                  <span className="text-gray-700 text-sm">La experiencia más completa</span>
                 </div>
               </div>
 

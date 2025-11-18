@@ -306,7 +306,8 @@ app.post('/api/session/:checkout_session_id/update', async (req, res) => {
       child_age,
       child_location,
       wish_list,
-      behavior_notes
+      behavior_notes,
+      additional_info
     } = req.body;
 
     if (!child_name) {
@@ -323,29 +324,62 @@ app.post('/api/session/:checkout_session_id/update', async (req, res) => {
     // Create HeyGen context with child information
     console.log('=== CREATING HEYGEN CONTEXT ===');
     console.log('Child name:', child_name);
+    const planType = session.metadata.plan_type;
+    const plan = PLANS[planType] || PLANS.mini;
+    console.log('Plan type:', planType, '- Duration:', plan.time_minutes, 'minutes');
     let contextId = '';
 
     if (API_KEY) {
       try {
-        // Format the Santa context text in Spanish
+        // Plan-specific instructions
+        const planInstructions = {
+          mini: {
+            target: '5 minutos',
+            responseLength: '1-2 frases',
+            depth: 'Conversación breve y directa, enfocada en lo esencial',
+            topics: 'Menciona 1-2 deseos principales'
+          },
+          premium: {
+            target: '10 minutos',
+            responseLength: '2-3 frases',
+            depth: 'Conversación balanceada con tiempo para explorar algunos temas',
+            topics: 'Explora 2-3 temas de interés'
+          },
+          vip: {
+            target: '20 minutos',
+            responseLength: '3-4 frases',
+            depth: 'Conversación profunda y detallada',
+            topics: 'Profundiza en hobbies, escuela, amigos, logros del año'
+          }
+        };
+
+        const instructions = planInstructions[planType] || planInstructions.mini;
+
+        // Format the Santa context text in Spanish with plan-specific details
         const contextText = `
 Eres Santa Claus hablando con ${child_name}${child_age ? `, de ${child_age} años` : ''}${child_location ? `, desde ${child_location}` : ''}.
 
-${wish_list ? `Lista de deseos del niño: ${wish_list}` : ''}
-${behavior_notes ? `Cómo se ha portado este año: ${behavior_notes}` : ''}
+INFORMACIÓN DEL NIÑO:
+${wish_list ? `- Lista de deseos: ${wish_list}` : ''}
+${behavior_notes ? `- Cómo se ha portado: ${behavior_notes}` : ''}
+${additional_info ? `- Información adicional: ${additional_info}` : ''}
+
+DURACIÓN DE LA LLAMADA: Apunta a una conversación de ${instructions.target} con una conclusión natural.
+
+ESTILO DE CONVERSACIÓN: ${instructions.depth}
+- Respuestas: ${instructions.responseLength} máximo
+- Temas a cubrir: ${instructions.topics}
 
 IMPORTANTE: Habla SIEMPRE en español natural y coloquial. No traduzcas literalmente del inglés.
 
-Instrucciones:
+Instrucciones generales:
 - Sé cálido, alegre y motivador
 - Habla en español mexicano natural (usa "niño/niña", "portarte bien", "regalitos")
 - Menciona sus deseos de forma natural en la conversación
 - Elogia su buen comportamiento y anímalo a seguir siendo bondadoso
-- Haz preguntas interesantes sobre su año, escuela, amigos, pasatiempos
-- Mantén respuestas concisas (2-3 frases) para mantener el interés
+- Haz preguntas interesantes sobre los detalles que los padres compartieron
 - Usa "¡Jo jo jo!" ocasionalmente pero no excesivamente
 - Si no estás seguro de algo, mantente en personaje y redirige con calidez
-- Apunta a una conversación de 5-10 minutos con una conclusión natural
 - Termina prometiendo entregar regalos en Nochebuena y menciona que enviarás una carta especial
 
 Reglas de seguridad:
@@ -403,6 +437,7 @@ Reglas de seguridad:
         child_location: child_location || '',
         wish_list: wish_list || '',
         behavior_notes: behavior_notes || '',
+        additional_info: additional_info || '',
         heygen_context_id: contextId || '',
       },
     });

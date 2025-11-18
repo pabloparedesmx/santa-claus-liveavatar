@@ -8,6 +8,7 @@ interface ChildInfo {
   location: string;
   wishList: string;
   behaviorNotes: string;
+  additionalInfo: string;
 }
 
 type AppState = 'landing' | 'form' | 'waiting' | 'chat' | 'completed';
@@ -19,7 +20,8 @@ function App() {
     age: null,
     location: '',
     wishList: '',
-    behaviorNotes: ''
+    behaviorNotes: '',
+    additionalInfo: ''
   });
   const [sessionTranscript, setSessionTranscript] = useState('');
   const [stripeSessionId, setStripeSessionId] = useState<string | null>(null);
@@ -65,6 +67,7 @@ function App() {
           location: data.child_info.location,
           wishList: data.child_info.wishList,
           behaviorNotes: data.child_info.behaviorNotes,
+          additionalInfo: data.child_info.additionalInfo || '',
         });
       }
 
@@ -109,6 +112,7 @@ function App() {
           child_location: childInfo.location,
           wish_list: childInfo.wishList,
           behavior_notes: childInfo.behaviorNotes,
+          additional_info: childInfo.additionalInfo,
         }),
       });
 
@@ -223,7 +227,7 @@ function App() {
 
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                ¿Qué desea {childInfo.name || 'tu hijo'} para esta Navidad? (opcional)
+                ¿Qué desea {childInfo.name || 'tu hijo'} para esta Navidad?
               </label>
               <textarea
                 value={childInfo.wishList}
@@ -236,7 +240,7 @@ function App() {
 
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                ¿Cómo se ha portado {childInfo.name || 'tu hijo'} este año? (opcional)
+                ¿Cómo se ha portado {childInfo.name || 'tu hijo'} este año?
               </label>
               <textarea
                 value={childInfo.behaviorNotes}
@@ -244,6 +248,20 @@ function App() {
                 className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-christmas-red focus:outline-none text-lg"
                 rows={3}
                 placeholder="Muy amable con sus hermanos, le encanta ayudar en casa..."
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Cuéntanos todo lo que quieras de {childInfo.name || 'tu hijo'}
+              </label>
+              <p className="text-xs text-gray-600 mb-2">Entre más nos cuentes, más personalizada será la experiencia</p>
+              <textarea
+                value={childInfo.additionalInfo}
+                onChange={(e) => setChildInfo({ ...childInfo, additionalInfo: e.target.value })}
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-christmas-red focus:outline-none text-lg"
+                rows={4}
+                placeholder="Sus hobbies, su materia favorita en la escuela, sus amigos, logros de este año, su mascota..."
               />
             </div>
 
@@ -331,7 +349,8 @@ function App() {
                 age: null,
                 location: '',
                 wishList: '',
-                behaviorNotes: ''
+                behaviorNotes: '',
+                additionalInfo: ''
               });
             }}
             className="christmas-button"

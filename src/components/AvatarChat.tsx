@@ -41,9 +41,6 @@ export function AvatarChat({ childInfo, contextId, timeLimitMinutes, onSessionEn
     const timer = setInterval(() => {
       setRemainingSeconds(prev => {
         if (prev <= 1) {
-          // Time's up! Auto-end session
-          console.log('⏰ Time limit reached, ending session');
-          handleEndSession();
           return 0;
         }
         return prev - 1;
@@ -62,6 +59,21 @@ export function AvatarChat({ childInfo, contextId, timeLimitMinutes, onSessionEn
       }
     };
   }, []);
+
+  // Auto-end session when time runs out
+  useEffect(() => {
+    if (remainingSeconds === 0 && connectionStatus === 'connected') {
+      console.log('⏰ Time limit reached, ending session');
+      const fullTranscript = transcript.map(m => `${m.role === 'user' ? 'Niño' : 'Santa'}: ${m.text}`).join('\n');
+
+      if (sessionRef.current) {
+        sessionRef.current.stop().catch(e => console.error('Error stopping session:', e));
+      }
+
+      setConnectionStatus('disconnected');
+      onSessionEnd?.(fullTranscript);
+    }
+  }, [remainingSeconds, connectionStatus, transcript, onSessionEnd]);
 
   async function initializeSession() {
     try {

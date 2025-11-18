@@ -560,6 +560,57 @@ Guidelines:
   }
 });
 
+// Stop HeyGen session endpoint
+app.post('/api/stop-session', async (req, res) => {
+  try {
+    const { session_token } = req.body;
+
+    if (!session_token) {
+      return res.status(400).json({ error: 'session_token is required' });
+    }
+
+    console.log('🛑 Stopping HeyGen session via REST API');
+
+    const response = await fetch(`${HEYGEN_API_URL}/v1/sessions/stop`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${session_token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const responseText = await response.text();
+    console.log('Stop session response status:', response.status);
+    console.log('Stop session response:', responseText);
+
+    if (!response.ok) {
+      let errorData;
+      try {
+        errorData = JSON.parse(responseText);
+      } catch {
+        errorData = { message: responseText };
+      }
+      return res.status(response.status).json({
+        error: 'Failed to stop HeyGen session',
+        details: errorData
+      });
+    }
+
+    const data = JSON.parse(responseText);
+    console.log('✅ HeyGen session stopped successfully');
+
+    res.json({
+      success: true,
+      message: 'Session stopped successfully',
+      data
+    });
+
+  } catch (error) {
+    console.error('Error stopping HeyGen session:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', apiKeyConfigured: !!API_KEY });

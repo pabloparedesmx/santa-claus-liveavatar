@@ -25,6 +25,7 @@ interface Message {
 export function AvatarChat({ childInfo, contextId, timeLimitMinutes, onSessionEnd }: AvatarChatProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const sessionRef = useRef<LiveAvatarSession | null>(null);
+  const sessionTokenRef = useRef<string | null>(null);
   const [isConnecting, setIsConnecting] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -60,15 +61,50 @@ export function AvatarChat({ childInfo, contextId, timeLimitMinutes, onSessionEn
     };
   }, []);
 
+  // Function to stop session via backend API
+  async function stopSessionViaAPI() {
+    if (!sessionTokenRef.current) {
+      console.warn('⚠️ No session token available to stop session');
+      return;
+    }
+
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL || '/api';
+      console.log('🛑 Calling backend to stop HeyGen session...');
+
+      const response = await fetch(`${apiUrl}/stop-session`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          session_token: sessionTokenRef.current
+        }),
+      });
+
+      if (response.ok) {
+        console.log('✅ HeyGen session stopped via backend API');
+      } else {
+        console.error('❌ Failed to stop session via backend:', await response.text());
+      }
+    } catch (error) {
+      console.error('❌ Error calling stop-session API:', error);
+    }
+  }
+
   // Auto-end session when time runs out
   useEffect(() => {
     if (remainingSeconds === 0 && connectionStatus === 'connected') {
       console.log('⏰ Time limit reached, ending session');
       const fullTranscript = transcript.map(m => `${m.role === 'user' ? 'Niño' : 'Santa'}: ${m.text}`).join('\n');
 
+      // Stop client-side session
       if (sessionRef.current) {
-        sessionRef.current.stop().catch(e => console.error('Error stopping session:', e));
+        sessionRef.current.stop().catch(e => console.error('Error stopping client session:', e));
       }
+
+      // Stop server-side session via API to ensure credits stop
+      stopSessionViaAPI();
 
       setConnectionStatus('disconnected');
       onSessionEnd?.(fullTranscript);
@@ -111,6 +147,9 @@ export function AvatarChat({ childInfo, contextId, timeLimitMinutes, onSessionEn
       });
 
       console.log('✅ Session token received');
+
+      // Store session token for later use in stopping session
+      sessionTokenRef.current = session_token;
 
       console.log('Session token received, initializing LiveAvatar...');
 
@@ -261,13 +300,17 @@ export function AvatarChat({ childInfo, contextId, timeLimitMinutes, onSessionEn
     if (confirm('¿Estás seguro que quieres terminar la llamada con Santa?')) {
       const fullTranscript = transcript.map(m => `${m.role === 'user' ? 'Niño' : 'Santa'}: ${m.text}`).join('\n');
 
+      // Stop client-side session
       if (sessionRef.current) {
         try {
           await sessionRef.current.stop();
         } catch (e) {
-          console.error('Error stopping session:', e);
+          console.error('Error stopping client session:', e);
         }
       }
+
+      // Stop server-side session via API to ensure credits stop
+      await stopSessionViaAPI();
 
       setConnectionStatus('disconnected');
       onSessionEnd?.(fullTranscript);

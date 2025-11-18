@@ -12,6 +12,7 @@ interface AvatarChatProps {
     behaviorNotes?: string;
   };
   contextId?: string;
+  timeLimitMinutes: number;
   onSessionEnd?: (transcript: string) => void;
 }
 
@@ -21,14 +22,14 @@ interface Message {
   timestamp: number;
 }
 
-export function AvatarChat({ childInfo, contextId, onSessionEnd }: AvatarChatProps) {
+export function AvatarChat({ childInfo, contextId, timeLimitMinutes, onSessionEnd }: AvatarChatProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const sessionRef = useRef<LiveAvatarSession | null>(null);
   const [isConnecting, setIsConnecting] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [transcript, setTranscript] = useState<Message[]>([]);
-  const [elapsedTime, setElapsedTime] = useState(0);
+  const [remainingSeconds, setRemainingSeconds] = useState(timeLimitMinutes * 60);
   const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected'>('connecting');
   const [isChatMode, setIsChatMode] = useState(false);
   const [chatInput, setChatInput] = useState('');
@@ -36,9 +37,17 @@ export function AvatarChat({ childInfo, contextId, onSessionEnd }: AvatarChatPro
   useEffect(() => {
     initializeSession();
 
-    // Timer
+    // Countdown Timer
     const timer = setInterval(() => {
-      setElapsedTime(prev => prev + 1);
+      setRemainingSeconds(prev => {
+        if (prev <= 1) {
+          // Time's up! Auto-end session
+          console.log('⏰ Time limit reached, ending session');
+          handleEndSession();
+          return 0;
+        }
+        return prev - 1;
+      });
     }, 1000);
 
     return () => {
@@ -299,9 +308,13 @@ export function AvatarChat({ childInfo, contextId, onSessionEnd }: AvatarChatPro
         </div>
       )}
 
-      {/* Timer - iPhone style top bar */}
-      <div className="absolute top-safe top-4 left-4 md:left-4 bg-black/60 backdrop-blur-sm text-white px-3 py-1.5 md:px-4 md:py-2 rounded-lg font-mono text-sm md:text-lg">
-        {formatTime(elapsedTime)}
+      {/* Countdown Timer - iPhone style top bar */}
+      <div className={`absolute top-safe top-4 left-4 md:left-4 backdrop-blur-sm px-3 py-1.5 md:px-4 md:py-2 rounded-lg font-mono text-sm md:text-lg font-bold ${
+        remainingSeconds <= 60 ? 'bg-red-600/90 text-white animate-pulse' :
+        remainingSeconds <= 180 ? 'bg-yellow-600/90 text-white' :
+        'bg-black/60 text-white'
+      }`}>
+        ⏱️ {formatTime(remainingSeconds)}
       </div>
 
       {/* Connection status - iPhone style */}

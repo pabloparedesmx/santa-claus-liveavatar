@@ -25,6 +25,7 @@ function App() {
   const [stripeSessionId, setStripeSessionId] = useState<string | null>(null);
   const [isLoadingSession, setIsLoadingSession] = useState(false);
   const [heygenContextId, setHeygenContextId] = useState<string>('');
+  const [timeLimitMinutes, setTimeLimitMinutes] = useState<number>(5);
 
   // Check for session_id in URL (redirect from Stripe)
   useEffect(() => {
@@ -50,6 +51,11 @@ function App() {
       }
 
       const data = await response.json();
+
+      // Set time limit from session data
+      if (data.time_limit_minutes) {
+        setTimeLimitMinutes(data.time_limit_minutes);
+      }
 
       // If child info already exists (shouldn't happen in new flow, but just in case)
       if (data.child_info?.name) {
@@ -281,7 +287,7 @@ function App() {
 
   // Avatar Chat State
   if (appState === 'chat') {
-    return <AvatarChat childInfo={childInfo} contextId={heygenContextId} onSessionEnd={handleSessionEnd} />;
+    return <AvatarChat childInfo={childInfo} contextId={heygenContextId} timeLimitMinutes={timeLimitMinutes} onSessionEnd={handleSessionEnd} />;
   }
 
   // Completed State

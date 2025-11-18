@@ -231,11 +231,14 @@ export function Landing() {
               <div className="text-center mb-6">
                 <div className="text-4xl mb-3">🎁</div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">Mini Carta</h3>
-                <div className="mb-4">
-                  <span className="text-4xl font-bold text-christmas-red">$45</span>
-                  <span className="text-gray-600 text-lg"> MXN</span>
+                <div className="mb-2">
+                  <span className="text-5xl font-bold text-christmas-red">$5</span>
+                  <span className="text-gray-600 text-lg"> USD</span>
                 </div>
-                <p className="text-gray-600 text-sm mb-4">5 minutos con Santa</p>
+                <div className="bg-christmas-red/10 rounded-lg py-2 px-4 mb-4">
+                  <p className="text-christmas-red font-bold text-2xl">5 minutos</p>
+                  <p className="text-gray-600 text-sm">con Santa</p>
+                </div>
               </div>
 
               <div className="space-y-3 mb-6">
@@ -270,11 +273,14 @@ export function Landing() {
               <div className="text-center mb-6">
                 <div className="text-4xl mb-3">🎄</div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">Carta Premium</h3>
-                <div className="mb-4">
-                  <span className="text-4xl font-bold text-christmas-red">$80</span>
-                  <span className="text-gray-600 text-lg"> MXN</span>
+                <div className="mb-2">
+                  <span className="text-5xl font-bold text-christmas-red">$10</span>
+                  <span className="text-gray-600 text-lg"> USD</span>
                 </div>
-                <p className="text-gray-600 text-sm mb-4">10 minutos con Santa</p>
+                <div className="bg-christmas-red/10 rounded-lg py-2 px-4 mb-4">
+                  <p className="text-christmas-red font-bold text-2xl">10 minutos</p>
+                  <p className="text-gray-600 text-sm">con Santa</p>
+                </div>
               </div>
 
               <div className="space-y-3 mb-6">
@@ -310,11 +316,14 @@ export function Landing() {
               <div className="text-center mb-6">
                 <div className="text-4xl mb-3">🧝</div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">Experiencia VIP</h3>
-                <div className="mb-4">
-                  <span className="text-4xl font-bold text-christmas-red">$140</span>
-                  <span className="text-gray-600 text-lg"> MXN</span>
+                <div className="mb-2">
+                  <span className="text-5xl font-bold text-christmas-red">$20</span>
+                  <span className="text-gray-600 text-lg"> USD</span>
                 </div>
-                <p className="text-gray-600 text-sm mb-4">20 minutos con Santa</p>
+                <div className="bg-christmas-red/10 rounded-lg py-2 px-4 mb-4">
+                  <p className="text-christmas-red font-bold text-2xl">20 minutos</p>
+                  <p className="text-gray-600 text-sm">con Santa</p>
+                </div>
               </div>
 
               <div className="space-y-3 mb-6">

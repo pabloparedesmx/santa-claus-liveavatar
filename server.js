@@ -29,7 +29,7 @@ const API_KEY = process.env.VITE_HEYGEN_API_KEY;
 const PLANS = {
   mini: {
     name: 'Mini Carta',
-    price: 4500, // $45 MXN in centavos
+    price: 500, // $5 USD in cents
     time_minutes: 5,
     heygen_credits: 10,
     features: [
@@ -40,7 +40,7 @@ const PLANS = {
   },
   premium: {
     name: 'Carta Premium',
-    price: 8000, // $80 MXN in centavos
+    price: 1000, // $10 USD in cents
     time_minutes: 10,
     heygen_credits: 20,
     features: [
@@ -52,7 +52,7 @@ const PLANS = {
   },
   vip: {
     name: 'Experiencia VIP',
-    price: 14000, // $140 MXN in centavos
+    price: 2000, // $20 USD in cents
     time_minutes: 20,
     heygen_credits: 40,
     features: [
@@ -83,7 +83,7 @@ app.post('/api/create-checkout-session', async (req, res) => {
       line_items: [
         {
           price_data: {
-            currency: 'mxn',
+            currency: 'usd',
             product_data: {
               name: plan.name,
               description: `${plan.time_minutes} minutos con Santa + Carta personalizada`,

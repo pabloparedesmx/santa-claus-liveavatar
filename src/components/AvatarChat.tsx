@@ -185,14 +185,6 @@ export function AvatarChat({ childInfo, contextId, timeLimitMinutes, onSessionEn
 
       session.on(AgentEventsEnum.AVATAR_SPEAK_ENDED, (data: any) => {
         console.log('🎅 Santa stopped speaking:', data);
-        if (data?.text) {
-          console.log('💬 Santa said:', data.text);
-          setTranscript(prev => [...prev, {
-            role: 'assistant',
-            text: data.text,
-            timestamp: Date.now()
-          }]);
-        }
       });
 
       session.on(AgentEventsEnum.USER_SPEAK_STARTED, () => {
@@ -201,10 +193,27 @@ export function AvatarChat({ childInfo, contextId, timeLimitMinutes, onSessionEn
 
       session.on(AgentEventsEnum.USER_SPEAK_ENDED, (data: any) => {
         console.log('👤 User stopped speaking:', data);
+      });
+
+      // Server events for capturing accurate transcriptions
+      (session as any).on('user.transcription_ended', (data: any) => {
+        console.log('📝 USER TRANSCRIPT:', data);
         if (data?.text) {
-          console.log('📝 User said:', data.text);
+          console.log('👤 User said:', data.text);
           setTranscript(prev => [...prev, {
             role: 'user',
+            text: data.text,
+            timestamp: Date.now()
+          }]);
+        }
+      });
+
+      (session as any).on('avatar.transcription_ended', (data: any) => {
+        console.log('📝 AVATAR TRANSCRIPT:', data);
+        if (data?.text) {
+          console.log('🎅 Santa said:', data.text);
+          setTranscript(prev => [...prev, {
+            role: 'assistant',
             text: data.text,
             timestamp: Date.now()
           }]);
@@ -254,26 +263,42 @@ export function AvatarChat({ childInfo, contextId, timeLimitMinutes, onSessionEn
   }
 
   function toggleChatMode() {
+    console.log('🔘 Toggle button clicked!');
+    console.log('Current isChatMode:', isChatMode);
+    console.log('sessionRef.current exists:', !!sessionRef.current);
+
     const newMode = !isChatMode;
     setIsChatMode(newMode);
-    console.log('🔄 Toggling chat mode:', newMode ? 'CHAT' : 'VOICE');
+    console.log('🔄 Toggling chat mode to:', newMode ? 'CHAT' : 'VOICE');
 
-    if (sessionRef.current) {
-      try {
-        if (newMode) {
-          // Switching to chat mode - mute voice
-          sessionRef.current.voiceChat?.mute();
-          console.log('💬 Switched to chat mode');
+    if (!sessionRef.current) {
+      console.error('❌ No session available for chat mode toggle');
+      return;
+    }
+
+    if (!sessionRef.current.voiceChat) {
+      console.error('❌ No voiceChat available');
+      return;
+    }
+
+    try {
+      if (newMode) {
+        // Switching to chat mode - mute voice
+        console.log('🔇 Muting voice for chat mode...');
+        sessionRef.current.voiceChat.mute();
+        console.log('✅ Successfully switched to chat mode');
+      } else {
+        // Switching to voice mode - unmute if not manually muted
+        console.log('🔊 Unmuting voice for voice mode...');
+        if (!isMuted) {
+          sessionRef.current.voiceChat.unmute();
+          console.log('✅ Successfully switched to voice mode');
         } else {
-          // Switching to voice mode - unmute if not manually muted
-          if (!isMuted) {
-            sessionRef.current.voiceChat?.unmute();
-          }
-          console.log('🎤 Switched to voice mode');
+          console.log('⚠️ Voice mode activated but mic is manually muted');
         }
-      } catch (error) {
-        console.error('Error toggling chat mode:', error);
       }
+    } catch (error) {
+      console.error('❌ Error toggling chat mode:', error);
     }
   }
 

@@ -66,7 +66,7 @@ export function Landing() {
                 <button
                   onClick={() => handleSelectPlan('premium')}
                   disabled={isProcessing}
-                  className="christmas-button text-xl px-12 py-4 transform hover:scale-105 transition-all shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="bg-christmas-green hover:bg-green-700 text-white font-bold text-xl px-12 py-5 rounded-xl transform hover:scale-110 transition-all shadow-2xl hover:shadow-green-500/50 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-green-400"
                 >
                   {isProcessing ? '⏳ Procesando...' : 'Comienza la Magia ✨'}
                 </button>

@@ -273,7 +273,7 @@ function App() {
               {isLoadingSession ? '⏳ Preparando videollamada...' : '🎄 Iniciar Videollamada con Santa 🎅'}
             </button>
             <p className="text-center text-sm text-gray-600">
-              Recibirás la carta personalizada por email después de la llamada
+              Asegúrate de tener buena conexión a internet para una mejor experiencia
             </p>
           </form>
         </div>
@@ -318,15 +318,15 @@ function App() {
             ¡Qué maravillosa visita con Santa! 🎅
           </h2>
           <p className="text-xl text-gray-600 mb-8">
-            ¡Santa está escribiendo la carta personalizada de {childInfo.name} ahora mismo!
+            ¡{childInfo.name} acaba de vivir un momento mágico que recordará para siempre!
           </p>
 
-          <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-6 mb-8">
+          <div className="bg-green-50 border-2 border-green-200 rounded-lg p-6 mb-8">
             <p className="text-lg text-gray-700 mb-2">
-              📧 Recibirás la carta por email dentro de la próxima hora
+              ✨ Gracias por crear este recuerdo navideño especial
             </p>
             <p className="text-sm text-gray-500">
-              (Revisa tu carpeta de spam si no la ves)
+              La magia de la Navidad vive en momentos como este
             </p>
           </div>
 

@@ -167,6 +167,14 @@ export function AvatarChat({ childInfo, contextId, timeLimitMinutes, onSessionEn
         if (state === SessionState.CONNECTED) {
           setConnectionStatus('connected');
           setIsConnecting(false);
+
+          // Ensure video is playing with audio on mobile when connected
+          if (videoRef.current) {
+            videoRef.current.muted = false;
+            videoRef.current.play().catch(e => {
+              console.warn('Autoplay policy prevented audio, user interaction may be needed:', e);
+            });
+          }
         } else if (state === SessionState.DISCONNECTED) {
           setConnectionStatus('disconnected');
         }
@@ -176,6 +184,12 @@ export function AvatarChat({ childInfo, contextId, timeLimitMinutes, onSessionEn
         console.log('Stream ready, attaching video element');
         if (videoRef.current) {
           session.attach(videoRef.current);
+
+          // Ensure audio is unmuted and playing on mobile devices
+          videoRef.current.muted = false;
+          videoRef.current.play().catch(e => {
+            console.warn('Autoplay failed, will retry on user interaction:', e);
+          });
         }
       });
 
@@ -374,6 +388,7 @@ export function AvatarChat({ childInfo, contextId, timeLimitMinutes, onSessionEn
         className="absolute inset-0 w-full h-full object-cover md:object-center object-[75%_center]"
         autoPlay
         playsInline
+        muted={false}
         poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600'%3E%3Crect fill='%23DC2626' width='800' height='600'/%3E%3Ctext x='400' y='300' text-anchor='middle' font-size='64' fill='white' font-family='Arial'%3E🎅%3C/text%3E%3C/svg%3E"
       />
 

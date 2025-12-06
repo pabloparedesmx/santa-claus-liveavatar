@@ -29,7 +29,7 @@ const API_KEY = process.env.VITE_HEYGEN_API_KEY;
 const PLANS = {
   mini: {
     name: 'Plan Mini',
-    price: 500, // $5 USD in cents
+    price: 10000, // $100 MXN in centavos
     time_minutes: 5,
     heygen_credits: 10,
     features: [
@@ -40,7 +40,7 @@ const PLANS = {
   },
   premium: {
     name: 'Plan Premium',
-    price: 1000, // $10 USD in cents
+    price: 20000, // $200 MXN in centavos
     time_minutes: 10,
     heygen_credits: 20,
     features: [
@@ -52,7 +52,7 @@ const PLANS = {
   },
   vip: {
     name: 'Experiencia VIP',
-    price: 2000, // $20 USD in cents
+    price: 40000, // $400 MXN in centavos
     time_minutes: 20,
     heygen_credits: 40,
     features: [
@@ -83,7 +83,7 @@ app.post('/api/create-checkout-session', async (req, res) => {
       line_items: [
         {
           price_data: {
-            currency: 'usd',
+            currency: 'mxn',
             product_data: {
               name: plan.name,
               description: `Videollamada personalizada de ${plan.time_minutes} minutos con Santa Claus en vivo`,

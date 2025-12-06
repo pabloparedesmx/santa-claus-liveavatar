@@ -9,6 +9,7 @@ interface ChildInfo {
   wishList: string;
   behaviorNotes: string;
   additionalInfo: string;
+  parentGoal: string;
 }
 
 type AppState = 'landing' | 'form' | 'waiting' | 'chat' | 'completed';
@@ -21,7 +22,8 @@ function App() {
     location: '',
     wishList: '',
     behaviorNotes: '',
-    additionalInfo: ''
+    additionalInfo: '',
+    parentGoal: 'encourage'
   });
   const [sessionTranscript, setSessionTranscript] = useState('');
   const [stripeSessionId, setStripeSessionId] = useState<string | null>(null);
@@ -68,6 +70,7 @@ function App() {
           wishList: data.child_info.wishList,
           behaviorNotes: data.child_info.behaviorNotes,
           additionalInfo: data.child_info.additionalInfo || '',
+          parentGoal: data.child_info.parentGoal || 'encourage',
         });
       }
 
@@ -113,6 +116,7 @@ function App() {
           wish_list: childInfo.wishList,
           behavior_notes: childInfo.behaviorNotes,
           additional_info: childInfo.additionalInfo,
+          parent_goal: childInfo.parentGoal,
         }),
       });
 
@@ -263,6 +267,24 @@ function App() {
                 rows={4}
                 placeholder="Sus hobbies, su materia favorita en la escuela, sus amigos, logros de este año, su mascota..."
               />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                ¿Cuál quieres que sea el resultado de la llamada?
+              </label>
+              <p className="text-xs text-gray-600 mb-2">Esto ayudará a Santa a dirigir la conversación</p>
+              <select
+                value={childInfo.parentGoal}
+                onChange={(e) => setChildInfo({ ...childInfo, parentGoal: e.target.value })}
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-christmas-red focus:outline-none text-lg"
+              >
+                <option value="encourage">✨ Que Santa anime y motive a mi hijo</option>
+                <option value="confirm_gifts">🎁 Que Santa confirme que traerá sus regalos</option>
+                <option value="improve_behavior">⭐ Que Santa le diga que debe portarse mejor</option>
+                <option value="acknowledge_achievements">🏆 Que Santa reconozca sus logros del año</option>
+                <option value="inspire_kindness">❤️ Que Santa lo inspire a ser más amable y generoso</option>
+              </select>
             </div>
 
             <button

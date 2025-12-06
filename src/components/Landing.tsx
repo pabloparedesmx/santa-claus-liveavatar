@@ -64,11 +64,13 @@ export function Landing() {
 
               <div className="flex flex-col gap-4 items-center md:items-start mb-12">
                 <button
-                  onClick={() => handleSelectPlan('premium')}
-                  disabled={isProcessing}
-                  className="bg-christmas-green hover:bg-green-700 text-white font-bold text-xl px-12 py-5 rounded-xl transform hover:scale-110 transition-all shadow-2xl hover:shadow-green-500/50 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-green-400"
+                  onClick={() => {
+                    const pricingSection = document.getElementById('pricing');
+                    pricingSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }}
+                  className="bg-christmas-green hover:bg-green-700 text-white font-bold text-xl px-12 py-5 rounded-xl transform hover:scale-110 transition-all shadow-2xl hover:shadow-green-500/50 border-2 border-green-400"
                 >
-                  {isProcessing ? '⏳ Procesando...' : 'Comienza la Magia ✨'}
+                  Comienza la Magia ✨
                 </button>
                 <p className="text-white/80 text-sm">
                   Desde $100 MXN • Videollamada en vivo
@@ -216,7 +218,7 @@ export function Landing() {
       </div>
 
       {/* Pricing Section */}
-      <div className="bg-gradient-to-b from-christmas-red to-red-900 py-20">
+      <div id="pricing" className="bg-gradient-to-b from-christmas-red to-red-900 py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-4xl font-bold text-center text-white mb-4">
             Elige Tu Experiencia Mágica

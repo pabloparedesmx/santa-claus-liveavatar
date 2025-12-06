@@ -372,7 +372,8 @@ function App() {
                 location: '',
                 wishList: '',
                 behaviorNotes: '',
-                additionalInfo: ''
+                additionalInfo: '',
+                parentGoal: 'encourage'
               });
             }}
             className="christmas-button"

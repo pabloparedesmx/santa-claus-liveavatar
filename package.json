@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@heygen/liveavatar-web-sdk": "^0.0.9",
+    "@vercel/analytics": "^1.6.1",
     "dotenv": "^17.2.3",
     "lucide-react": "^0.553.0",
     "react": "^19.1.1",

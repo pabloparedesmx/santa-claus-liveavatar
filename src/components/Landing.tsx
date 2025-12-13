@@ -169,14 +169,14 @@ export function Landing() {
 
             <div className="text-center bg-yellow-50 p-6 rounded-xl">
               <div className="w-16 h-16 md:w-20 md:h-20 bg-christmas-gold rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6 text-3xl md:text-4xl shadow-lg">
-                📹
+                ✨
               </div>
               <div className="bg-christmas-gold text-white text-sm font-bold px-3 py-1 rounded-full inline-block mb-3">
                 PASO 3
               </div>
-              <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3 md:mb-4">Graba el Recuerdo</h3>
+              <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3 md:mb-4">Disfruta la Magia</h3>
               <p className="text-gray-700 text-sm md:text-base leading-relaxed">
-                Captura la carita de tu hijo cuando Santa dice su nombre. <strong>Recuerdo para toda la vida.</strong>
+                Ve la carita de tu hijo iluminarse cuando Santa lo llama por su nombre. <strong>Pura emoción navideña.</strong>
               </p>
             </div>
           </div>

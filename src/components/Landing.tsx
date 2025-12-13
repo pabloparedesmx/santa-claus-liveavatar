@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Heart, Clock, Shield, Video, Sparkles } from 'lucide-react';
+import { trackInitiateCheckout } from '../lib/metaPixel';
 
 export function Landing() {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -7,6 +8,14 @@ export function Landing() {
   const handleSelectPlan = async (plan: 'mini' | 'premium' | 'vip') => {
     try {
       setIsProcessing(true);
+
+      // Track InitiateCheckout event
+      const planValues = {
+        mini: 100,
+        premium: 200,
+        vip: 400
+      };
+      trackInitiateCheckout(plan, planValues[plan], 'MXN');
 
       // Create Stripe checkout session
       const apiUrl = import.meta.env.VITE_API_URL || '/api';

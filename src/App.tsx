@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { AvatarChat } from './components/AvatarChat';
 import { Landing } from './components/Landing';
+import { trackPurchase, trackLead, trackStartCall, trackCompleteCall } from './lib/metaPixel';
 
 interface ChildInfo {
   name: string;
@@ -30,6 +31,7 @@ function App() {
   const [isLoadingSession, setIsLoadingSession] = useState(false);
   const [heygenContextId, setHeygenContextId] = useState<string>('');
   const [timeLimitMinutes, setTimeLimitMinutes] = useState<number>(5);
+  const [purchaseTracked, setPurchaseTracked] = useState(false);
 
   // Check for session_id in URL (redirect from Stripe)
   useEffect(() => {
@@ -59,6 +61,18 @@ function App() {
       // Set time limit from session data
       if (data.time_limit_minutes) {
         setTimeLimitMinutes(data.time_limit_minutes);
+
+        // Track Purchase event (successful payment)
+        if (!purchaseTracked) {
+          const planMap: Record<number, { name: string; value: number }> = {
+            5: { name: 'mini', value: 100 },
+            10: { name: 'premium', value: 200 },
+            20: { name: 'vip', value: 400 }
+          };
+          const plan = planMap[data.time_limit_minutes] || { name: 'unknown', value: 0 };
+          trackPurchase(plan.name, plan.value, 'MXN');
+          setPurchaseTracked(true);
+        }
       }
 
       // If child info already exists (shouldn't happen in new flow, but just in case)
@@ -127,6 +141,9 @@ function App() {
       const data = await response.json();
       console.log('✅ Child info saved');
 
+      // Track Lead conversion (form completed)
+      trackLead(childInfo.name);
+
       // Store the context_id if available
       if (data.context_id) {
         setHeygenContextId(data.context_id);
@@ -141,6 +158,14 @@ function App() {
       // Transition to chat after short delay
       setTimeout(() => {
         setAppState('chat');
+        // Track video call start
+        const planMap: Record<number, string> = {
+          5: 'mini',
+          10: 'premium',
+          20: 'vip'
+        };
+        const planName = planMap[timeLimitMinutes] || 'unknown';
+        trackStartCall(planName, timeLimitMinutes);
         setIsLoadingSession(false);
       }, 3000);
 
@@ -154,6 +179,15 @@ function App() {
   const handleSessionEnd = (transcript: string) => {
     setSessionTranscript(transcript);
     setAppState('completed');
+
+    // Track video call completion
+    const planMap: Record<number, string> = {
+      5: 'mini',
+      10: 'premium',
+      20: 'vip'
+    };
+    const planName = planMap[timeLimitMinutes] || 'unknown';
+    trackCompleteCall(planName, timeLimitMinutes);
   };
 
   // Landing Page State

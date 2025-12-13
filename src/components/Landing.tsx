@@ -47,38 +47,37 @@ export function Landing() {
           <div className="snowflake">❆</div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 md:pt-20 pb-16 md:pb-24">
+          <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
             {/* Left side - Text */}
-            <div className="text-center md:text-left">
-              <span className="inline-block text-6xl mb-4 animate-bounce">🎅</span>
-              <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 drop-shadow-lg">
-                Una Videollamada Mágica
+            <div className="text-center md:text-left order-2 md:order-1">
+              <span className="inline-block text-5xl md:text-6xl mb-3 md:mb-4 animate-bounce">🎅</span>
+              <h1 className="text-4xl md:text-7xl font-bold text-white mb-4 md:mb-6 drop-shadow-lg leading-tight">
+                Videollamada EN VIVO
                 <br />
                 <span className="text-christmas-gold">Con Santa Claus</span>
               </h1>
-              <p className="text-xl md:text-2xl text-white/90 mb-8">
-                Regala a tu hijo una experiencia navideña inolvidable con una
-                conversación personalizada en vivo con Santa.
+              <p className="text-lg md:text-2xl text-white/90 mb-6 md:mb-8 leading-relaxed">
+                <strong className="text-white">Santa conoce a tu hijo por su nombre</strong> y habla de sus deseos en una conversación REAL personalizada
               </p>
 
-              <div className="flex flex-col gap-4 items-center md:items-start mb-12">
+              <div className="flex flex-col gap-3 md:gap-4 items-center md:items-start mb-8 md:mb-12">
                 <button
                   onClick={() => {
                     const pricingSection = document.getElementById('pricing');
                     pricingSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                   }}
-                  className="bg-christmas-green hover:bg-green-700 text-white font-bold text-xl px-12 py-5 rounded-xl transform hover:scale-110 transition-all shadow-2xl hover:shadow-green-500/50 border-2 border-green-400"
+                  className="w-full md:w-auto bg-christmas-green hover:bg-green-700 text-white font-bold text-lg md:text-xl px-8 md:px-12 py-4 md:py-5 rounded-xl transform hover:scale-105 md:hover:scale-110 transition-all shadow-2xl hover:shadow-green-500/50 border-2 border-green-400"
                 >
-                  Comienza la Magia ✨
+                  Ver Planes - Desde $100 MXN 🎁
                 </button>
-                <p className="text-white/80 text-sm">
-                  Desde $100 MXN • Videollamada en vivo
+                <p className="text-white/90 text-base md:text-sm font-semibold">
+                  ✅ Pago seguro • ✅ Disponible ahora • ✅ 5, 10 o 20 minutos
                 </p>
               </div>
 
-              {/* Trust badges */}
-              <div className="flex flex-wrap justify-center md:justify-start gap-6 text-white/70 text-sm">
+              {/* Trust badges - Simplified for mobile */}
+              <div className="hidden md:flex flex-wrap justify-center md:justify-start gap-6 text-white/70 text-sm">
                 <div className="flex items-center gap-2">
                   <Shield className="w-5 h-5" />
                   <span>Pago Seguro</span>
@@ -94,16 +93,22 @@ export function Landing() {
               </div>
             </div>
 
-            {/* Right side - Santa Image */}
-            <div className="hidden md:block">
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-white/20">
+            {/* Right side - Santa Image - NOW VISIBLE ON MOBILE! */}
+            <div className="order-1 md:order-2">
+              <div className="relative rounded-xl md:rounded-2xl overflow-hidden shadow-2xl border-2 md:border-4 border-white/20 bg-black/20">
                 <img
                   src="/image (2).png"
-                  alt="Santa Claus en videollamada"
+                  alt="Niño hablando con Santa Claus en videollamada en vivo"
                   className="w-full h-auto"
+                  loading="eager"
                 />
-                <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm font-semibold">
-                  ⏱️ En vivo
+                <div className="absolute top-3 left-3 md:top-4 md:left-4 bg-red-600/90 backdrop-blur-sm text-white px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-bold flex items-center gap-1.5 shadow-lg animate-pulse">
+                  <span className="w-2 h-2 bg-white rounded-full"></span>
+                  EN VIVO
+                </div>
+                <div className="absolute bottom-3 left-3 right-3 md:bottom-4 md:left-4 md:right-4 bg-black/70 backdrop-blur-sm text-white px-3 py-2 md:px-4 md:py-3 rounded-lg text-xs md:text-sm">
+                  <p className="font-semibold">🎅 "¡Hola [Nombre]! Escuché que quieres..."</p>
+                  <p className="text-white/80 text-xs mt-1">Santa habla directo con tu hijo</p>
                 </div>
               </div>
             </div>
@@ -112,48 +117,68 @@ export function Landing() {
       </div>
 
       {/* How It Works Section */}
-      <div className="bg-white py-20">
+      <div className="bg-white py-12 md:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-4xl font-bold text-center text-gray-900 mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-3 md:mb-4">
             ¿Cómo Funciona?
           </h2>
-          <p className="text-xl text-gray-600 text-center mb-16 max-w-2xl mx-auto">
-            Tres simples pasos para crear un recuerdo navideño mágico
+          <p className="text-base md:text-xl text-gray-600 text-center mb-10 md:mb-16 max-w-2xl mx-auto">
+            Solo 3 pasos para la experiencia más mágica
           </p>
 
-          <div className="grid md:grid-cols-3 gap-12">
-            <div className="text-center">
-              <div className="w-20 h-20 bg-christmas-red rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
+          <div className="grid md:grid-cols-3 gap-8 md:gap-12">
+            <div className="text-center bg-red-50 p-6 rounded-xl">
+              <div className="w-16 h-16 md:w-20 md:h-20 bg-christmas-red rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6 text-3xl md:text-4xl shadow-lg">
                 📝
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">1. Cuéntanos Sobre Tu Hijo</h3>
-              <p className="text-gray-600">
-                Comparte el nombre, edad, lista de deseos y cómo se ha portado este año.
-                Santa personalizará la conversación especialmente para él.
+              <div className="bg-christmas-red text-white text-sm font-bold px-3 py-1 rounded-full inline-block mb-3">
+                PASO 1
+              </div>
+              <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3 md:mb-4">Elige tu Plan y Paga</h3>
+              <p className="text-gray-700 text-sm md:text-base leading-relaxed">
+                Completa el formulario con el nombre de tu hijo, sus deseos y cómo se ha portado. <strong>Toma 2 minutos.</strong>
               </p>
             </div>
 
-            <div className="text-center">
-              <div className="w-20 h-20 bg-christmas-green rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
+            <div className="text-center bg-green-50 p-6 rounded-xl">
+              <div className="w-16 h-16 md:w-20 md:h-20 bg-christmas-green rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6 text-3xl md:text-4xl shadow-lg">
                 🎥
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">2. Conéctate Con Santa en Vivo</h3>
-              <p className="text-gray-600">
-                Tu hijo disfruta de una videollamada con Santa.
-                ¡Mira cómo sus ojos se iluminan cuando Santa recuerda todo sobre él!
+              <div className="bg-christmas-green text-white text-sm font-bold px-3 py-1 rounded-full inline-block mb-3">
+                PASO 2
+              </div>
+              <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3 md:mb-4">Videollamada EN VIVO</h3>
+              <p className="text-gray-700 text-sm md:text-base leading-relaxed">
+                Santa llama a tu hijo <strong>por su nombre</strong> y habla de sus deseos. <strong>100% personalizado.</strong>
               </p>
             </div>
 
-            <div className="text-center">
-              <div className="w-20 h-20 bg-christmas-gold rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
-                ✨
+            <div className="text-center bg-yellow-50 p-6 rounded-xl">
+              <div className="w-16 h-16 md:w-20 md:h-20 bg-christmas-gold rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6 text-3xl md:text-4xl shadow-lg">
+                📹
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">3. Crea un Recuerdo Inolvidable</h3>
-              <p className="text-gray-600">
-                Tu hijo vivirá una experiencia mágica hablando con Santa en persona.
-                ¡Un momento que recordará para siempre!
+              <div className="bg-christmas-gold text-white text-sm font-bold px-3 py-1 rounded-full inline-block mb-3">
+                PASO 3
+              </div>
+              <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3 md:mb-4">Graba el Recuerdo</h3>
+              <p className="text-gray-700 text-sm md:text-base leading-relaxed">
+                Captura la carita de tu hijo cuando Santa dice su nombre. <strong>Recuerdo para toda la vida.</strong>
               </p>
             </div>
+          </div>
+
+          {/* Quick CTA after How It Works */}
+          <div className="text-center mt-10 md:mt-12">
+            <button
+              onClick={() => {
+                const pricingSection = document.getElementById('pricing');
+                pricingSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }}
+              className="bg-christmas-red hover:bg-red-700 text-white font-bold text-base md:text-lg px-8 md:px-10 py-3 md:py-4 rounded-xl shadow-xl hover:shadow-2xl transition-all transform hover:scale-105"
+            >
+              Sí, Quiero Esta Experiencia 🎅
+            </button>
+            <p className="text-gray-600 text-sm mt-3">Desde $100 MXN • Disponible HOY</p>
           </div>
         </div>
       </div>

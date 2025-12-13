@@ -111,17 +111,6 @@ export function Landing() {
                     style={{ aspectRatio: '16/9', border: 'none' }}
                   />
 
-                  {/* Interactive Instructions Overlay */}
-                  <div className="absolute bottom-3 left-3 right-3 md:bottom-4 md:left-4 md:right-4 bg-gradient-to-r from-christmas-red/95 to-red-700/95 backdrop-blur-sm text-white px-3 py-2.5 md:px-4 md:py-3 rounded-lg shadow-lg border border-white/20">
-                    <p className="font-bold text-xs md:text-sm flex items-center gap-2">
-                      <span className="text-base md:text-lg">🎤</span>
-                      ¡Habla con Santa AHORA mismo!
-                    </p>
-                    <p className="text-white/90 text-xs mt-1">
-                      👆 Click aquí arriba → Prueba GRATIS cómo funciona
-                    </p>
-                  </div>
-
                   {/* Live Badge */}
                   <div className="absolute top-3 right-3 md:top-4 md:right-4 bg-red-600/90 backdrop-blur-sm text-white px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-bold flex items-center gap-1.5 shadow-lg">
                     <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>

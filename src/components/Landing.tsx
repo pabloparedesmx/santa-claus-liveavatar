@@ -15,7 +15,7 @@ export function Landing() {
         premium: 200,
         vip: 400
       };
-      trackInitiateCheckout(plan, planValues[plan], 'MXN');
+      trackInitiateCheckout(plan, planValues[plan], 'MXN', 'landing_v1');
 
       // Create Stripe checkout session
       const apiUrl = import.meta.env.VITE_API_URL || '/api';

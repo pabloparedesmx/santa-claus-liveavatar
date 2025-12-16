@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { AvatarChat } from './components/AvatarChat';
 import { Landing } from './components/Landing';
+import { LandingV2 } from './components/LandingV2';
 import { trackPurchase, trackLead, trackStartCall, trackCompleteCall } from './lib/metaPixel';
 
 interface ChildInfo {
@@ -32,6 +33,7 @@ function App() {
   const [heygenContextId, setHeygenContextId] = useState<string>('');
   const [timeLimitMinutes, setTimeLimitMinutes] = useState<number>(5);
   const [purchaseTracked, setPurchaseTracked] = useState(false);
+  const variant = window.location.pathname === '/landing' ? 'landing_v2' : 'landing_v1';
 
   // Check for session_id in URL (redirect from Stripe)
   useEffect(() => {
@@ -70,7 +72,7 @@ function App() {
             20: { name: 'vip', value: 400 }
           };
           const plan = planMap[data.time_limit_minutes] || { name: 'unknown', value: 0 };
-          trackPurchase(plan.name, plan.value, 'MXN');
+          trackPurchase(plan.name, plan.value, 'MXN', variant);
           setPurchaseTracked(true);
         }
       }
@@ -142,7 +144,7 @@ function App() {
       console.log('✅ Child info saved');
 
       // Track Lead conversion (form completed)
-      trackLead(childInfo.name);
+      trackLead(childInfo.name, variant);
 
       // Store the context_id if available
       if (data.context_id) {
@@ -165,7 +167,7 @@ function App() {
           20: 'vip'
         };
         const planName = planMap[timeLimitMinutes] || 'unknown';
-        trackStartCall(planName, timeLimitMinutes);
+        trackStartCall(planName, timeLimitMinutes, variant);
         setIsLoadingSession(false);
       }, 3000);
 
@@ -187,11 +189,16 @@ function App() {
       20: 'vip'
     };
     const planName = planMap[timeLimitMinutes] || 'unknown';
-    trackCompleteCall(planName, timeLimitMinutes);
+    trackCompleteCall(planName, timeLimitMinutes, variant);
   };
+
+  const pathname = window.location.pathname;
 
   // Landing Page State
   if (appState === 'landing') {
+    if (pathname === '/landing') {
+      return <LandingV2 />;
+    }
     return <Landing />;
   }
 

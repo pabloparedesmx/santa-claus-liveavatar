@@ -63,8 +63,8 @@ const PLANS = {
     ]
   },
   premium: {
-    name: 'Plan Premium',
-    price: 20000, // $200 MXN in centavos
+    name: 'Plan Navidad',
+    price: 15000, // $150 MXN in centavos
     time_minutes: 10,
     heygen_credits: 20,
     features: [

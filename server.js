@@ -66,37 +66,60 @@ const PLANS = {
   }
 };
 
-// Function to create/get the 100SANTA coupon
+// Function to create/get the 100SANTA coupon and promotion code
 async function ensureSantaCoupon() {
   try {
-    // Try to retrieve existing coupon
-    const existingCoupon = await stripe.coupons.retrieve('100SANTA').catch(() => null);
-
-    if (existingCoupon) {
-      console.log('✅ Cupón 100SANTA ya existe');
-      return existingCoupon;
+    // Step 1: Create or get the coupon
+    let coupon;
+    try {
+      coupon = await stripe.coupons.retrieve('SANTA100OFF');
+      console.log('✅ Cupón SANTA100OFF ya existe');
+    } catch (error) {
+      // Coupon doesn't exist, create it
+      coupon = await stripe.coupons.create({
+        id: 'SANTA100OFF',
+        percent_off: 100,
+        duration: 'forever',
+        name: 'Cupón Navideño 100% Descuento',
+        metadata: {
+          description: 'Cupón de 100% descuento para videollamada con Santa Claus'
+        }
+      });
+      console.log('✅ Cupón SANTA100OFF creado exitosamente');
     }
 
-    // Create new coupon if it doesn't exist
-    const coupon = await stripe.coupons.create({
-      id: '100SANTA',
-      percent_off: 100,
-      duration: 'forever',
-      name: 'Cupón Navideño 100% Descuento',
+    // Step 2: Create or get the promotion code
+    // Check if promotion code already exists
+    const existingPromoCodes = await stripe.promotionCodes.list({
+      code: '100SANTA',
+      limit: 1
+    });
+
+    if (existingPromoCodes.data.length > 0) {
+      console.log('✅ Código promocional 100SANTA ya existe');
+      return existingPromoCodes.data[0];
+    }
+
+    // Create the promotion code
+    const promoCode = await stripe.promotionCodes.create({
+      coupon: coupon.id,
+      code: '100SANTA',
+      active: true,
       metadata: {
-        description: 'Cupón de 100% descuento para videollamada con Santa Claus'
+        description: 'Código promocional navideño - 100% descuento'
       }
     });
 
-    console.log('✅ Cupón 100SANTA creado exitosamente');
-    return coupon;
+    console.log('✅ Código promocional 100SANTA creado exitosamente');
+    return promoCode;
   } catch (error) {
-    console.error('❌ Error al crear cupón 100SANTA:', error.message);
-    throw error;
+    console.error('❌ Error al crear cupón/código promocional:', error.message);
+    // Don't throw - let the server continue even if coupon creation fails
+    return null;
   }
 }
 
-// Ensure coupon exists on server start
+// Ensure coupon and promo code exist on server start
 ensureSantaCoupon();
 
 // Stripe Checkout Session endpoint (just plan selection, no child info yet)

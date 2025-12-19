@@ -5,17 +5,12 @@ import { trackInitiateCheckout } from '../lib/metaPixel';
 export function Landing() {
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleSelectPlan = async (plan: 'mini' | 'premium' | 'vip') => {
+  const handleSelectPlan = async (plan: 'standard') => {
     try {
       setIsProcessing(true);
 
       // Track InitiateCheckout event
-      const planValues = {
-        mini: 100,
-        premium: 200,
-        vip: 400
-      };
-      trackInitiateCheckout(plan, planValues[plan], 'MXN', 'landing_v1');
+      trackInitiateCheckout('standard', 150, 'MXN', 'landing_v1');
 
       // Create Stripe checkout session
       const apiUrl = import.meta.env.VITE_API_URL || '/api';
@@ -78,10 +73,10 @@ export function Landing() {
                   }}
                   className="w-full md:w-auto bg-christmas-green hover:bg-green-700 text-white font-bold text-lg md:text-xl px-8 md:px-12 py-4 md:py-5 rounded-xl transform hover:scale-105 md:hover:scale-110 transition-all shadow-2xl hover:shadow-green-500/50 border-2 border-green-400"
                 >
-                  Ver Planes - Desde $100 MXN 🎁
+                  Reservar Ahora - Solo $150 MXN 🎁
                 </button>
                 <p className="text-white/90 text-base md:text-sm font-semibold">
-                  ✅ Pago seguro • ✅ Disponible ahora • ✅ 5, 10 o 20 minutos
+                  ✅ Pago seguro • ✅ Disponible 24/7 • ✅ 5 minutos de magia
                 </p>
               </div>
 
@@ -194,7 +189,7 @@ export function Landing() {
             >
               Sí, Quiero Esta Experiencia 🎅
             </button>
-            <p className="text-gray-600 text-sm mt-3">Desde $100 MXN • Disponible HOY</p>
+            <p className="text-gray-600 text-sm mt-3">Solo $150 MXN • Disponible 24/7</p>
           </div>
         </div>
       </div>
@@ -262,143 +257,62 @@ export function Landing() {
       <div id="pricing" className="bg-gradient-to-b from-christmas-red to-red-900 py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-4xl font-bold text-center text-white mb-4">
-            Elige Tu Experiencia Mágica
+            Videollamada Mágica con Santa Claus
           </h2>
           <p className="text-xl text-white/90 text-center mb-12">
-            Planes diseñados para crear memorias inolvidables
+            Una experiencia navideña única y personalizada
           </p>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* Plan Mini */}
-            <div className="bg-white rounded-2xl shadow-2xl p-8 transform hover:scale-105 transition-all">
-              <div className="text-center mb-6">
-                <div className="text-4xl mb-3">🎁</div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Plan Mini</h3>
-                <div className="mb-2">
-                  <span className="text-5xl font-bold text-christmas-red">$100</span>
-                  <span className="text-gray-600 text-lg"> MXN</span>
+          <div className="max-w-md mx-auto">
+            {/* Plan Único */}
+            <div className="bg-white rounded-2xl shadow-2xl p-8 md:p-12 border-4 border-christmas-gold">
+              <div className="text-center mb-8">
+                <div className="text-6xl mb-4">🎅</div>
+                <h3 className="text-3xl font-bold text-gray-900 mb-4">Videollamada con Santa</h3>
+                <div className="mb-4">
+                  <span className="text-6xl font-bold text-christmas-red">$150</span>
+                  <span className="text-gray-600 text-2xl"> MXN</span>
                 </div>
-                <div className="bg-christmas-red/10 rounded-lg py-2 px-4 mb-4">
-                  <p className="text-christmas-red font-bold text-2xl">5 minutos</p>
-                  <p className="text-gray-600 text-sm">con Santa</p>
-                </div>
-              </div>
-
-              <div className="space-y-3 mb-6">
-                <div className="flex items-start gap-2">
-                  <span className="text-christmas-green text-lg">✓</span>
-                  <span className="text-gray-700 text-sm">Videollamada de 5 minutos</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-christmas-green text-lg">✓</span>
-                  <span className="text-gray-700 text-sm">Conversación personalizada</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-christmas-green text-lg">✓</span>
-                  <span className="text-gray-700 text-sm">Santa conoce sus deseos</span>
+                <div className="bg-christmas-red/10 rounded-lg py-3 px-6 mb-6">
+                  <p className="text-christmas-red font-bold text-3xl">5 minutos</p>
+                  <p className="text-gray-600 text-base">de magia navideña</p>
                 </div>
               </div>
 
-              <button
-                onClick={() => handleSelectPlan('mini')}
-                disabled={isProcessing}
-                className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-6 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isProcessing ? '⏳ Procesando...' : 'Seleccionar'}
-              </button>
-            </div>
-
-            {/* Plan Premium - POPULAR */}
-            <div className="bg-white rounded-2xl shadow-2xl p-8 transform scale-105 border-4 border-christmas-gold relative">
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-christmas-gold text-white px-4 py-1 rounded-full text-sm font-bold">
-                MÁS POPULAR
-              </div>
-              <div className="text-center mb-6">
-                <div className="text-4xl mb-3">🎄</div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Plan Premium</h3>
-                <div className="mb-2">
-                  <span className="text-5xl font-bold text-christmas-red">$200</span>
-                  <span className="text-gray-600 text-lg"> MXN</span>
+              <div className="space-y-4 mb-8">
+                <div className="flex items-start gap-3">
+                  <span className="text-christmas-green text-2xl">✓</span>
+                  <span className="text-gray-700 text-base">Videollamada EN VIVO de 5 minutos</span>
                 </div>
-                <div className="bg-christmas-red/10 rounded-lg py-2 px-4 mb-4">
-                  <p className="text-christmas-red font-bold text-2xl">10 minutos</p>
-                  <p className="text-gray-600 text-sm">con Santa</p>
+                <div className="flex items-start gap-3">
+                  <span className="text-christmas-green text-2xl">✓</span>
+                  <span className="text-gray-700 text-base">Santa conoce el nombre de tu hijo</span>
                 </div>
-              </div>
-
-              <div className="space-y-3 mb-6">
-                <div className="flex items-start gap-2">
-                  <span className="text-christmas-green text-lg">✓</span>
-                  <span className="text-gray-700 text-sm">Videollamada de 10 minutos</span>
+                <div className="flex items-start gap-3">
+                  <span className="text-christmas-green text-2xl">✓</span>
+                  <span className="text-gray-700 text-base">Conversación 100% personalizada</span>
                 </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-christmas-green text-lg">✓</span>
-                  <span className="text-gray-700 text-sm">Conversación extendida</span>
+                <div className="flex items-start gap-3">
+                  <span className="text-christmas-green text-2xl">✓</span>
+                  <span className="text-gray-700 text-base">Menciona sus deseos y cómo se ha portado</span>
                 </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-christmas-green text-lg">✓</span>
-                  <span className="text-gray-700 text-sm">Más tiempo para conectar</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-christmas-green text-lg">✓</span>
-                  <span className="text-gray-700 text-sm">Mención de deseos específicos</span>
+                <div className="flex items-start gap-3">
+                  <span className="text-christmas-green text-2xl">✓</span>
+                  <span className="text-gray-700 text-base">Disponible 24/7 - Comienza ahora mismo</span>
                 </div>
               </div>
 
               <button
-                onClick={() => handleSelectPlan('premium')}
+                onClick={() => handleSelectPlan('standard')}
                 disabled={isProcessing}
-                className="christmas-button w-full py-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-christmas-red hover:bg-red-700 text-white font-bold text-xl py-5 px-8 rounded-xl transition-all transform hover:scale-105 shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isProcessing ? '⏳ Procesando...' : 'Seleccionar ⭐'}
+                {isProcessing ? '⏳ Procesando...' : '🎄 Reservar Ahora'}
               </button>
-            </div>
 
-            {/* Experiencia VIP */}
-            <div className="bg-white rounded-2xl shadow-2xl p-8 transform hover:scale-105 transition-all">
-              <div className="text-center mb-6">
-                <div className="text-4xl mb-3">🧝</div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Experiencia VIP</h3>
-                <div className="mb-2">
-                  <span className="text-5xl font-bold text-christmas-red">$400</span>
-                  <span className="text-gray-600 text-lg"> MXN</span>
-                </div>
-                <div className="bg-christmas-red/10 rounded-lg py-2 px-4 mb-4">
-                  <p className="text-christmas-red font-bold text-2xl">20 minutos</p>
-                  <p className="text-gray-600 text-sm">con Santa</p>
-                </div>
-              </div>
-
-              <div className="space-y-3 mb-6">
-                <div className="flex items-start gap-2">
-                  <span className="text-christmas-green text-lg">✓</span>
-                  <span className="text-gray-700 text-sm">Videollamada de 20 minutos</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-christmas-green text-lg">✓</span>
-                  <span className="text-gray-700 text-sm">Conversación profunda y personalizada</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-christmas-green text-lg">✓</span>
-                  <span className="text-gray-700 text-sm">Experiencia VIP completa</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-christmas-green text-lg">✓</span>
-                  <span className="text-gray-700 text-sm">Más temas y preguntas</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-christmas-green text-lg">✓</span>
-                  <span className="text-gray-700 text-sm">La experiencia más completa</span>
-                </div>
-              </div>
-
-              <button
-                onClick={() => handleSelectPlan('vip')}
-                disabled={isProcessing}
-                className="w-full bg-christmas-gold hover:bg-yellow-600 text-white font-bold py-3 px-6 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isProcessing ? '⏳ Procesando...' : 'Seleccionar 👑'}
-              </button>
+              <p className="text-center text-gray-500 text-sm mt-4">
+                💳 Pago 100% seguro con Stripe
+              </p>
             </div>
           </div>
 
@@ -419,7 +333,7 @@ export function Landing() {
             Únete a miles de familias que han hecho la Navidad más especial.
           </p>
           <button
-            onClick={() => handleSelectPlan('premium')}
+            onClick={() => handleSelectPlan('standard')}
             disabled={isProcessing}
             className="christmas-button text-xl px-12 py-4 transform hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >

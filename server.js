@@ -51,43 +51,53 @@ const PARENT_GOALS = {
 
 // Plan configurations
 const PLANS = {
-  mini: {
-    name: 'Plan Mini',
-    price: 10000, // $100 MXN in centavos
+  standard: {
+    name: 'Videollamada con Santa',
+    price: 15000, // $150 MXN in centavos
     time_minutes: 5,
     heygen_credits: 10,
     features: [
-      'Videollamada de 5 minutos',
-      'Conversación personalizada',
-      'Santa conoce sus deseos'
-    ]
-  },
-  premium: {
-    name: 'Plan Navidad',
-    price: 15000, // $150 MXN in centavos
-    time_minutes: 10,
-    heygen_credits: 20,
-    features: [
-      'Videollamada de 10 minutos',
-      'Conversación extendida',
-      'Más tiempo para conectar',
-      'Mención de deseos específicos'
-    ]
-  },
-  vip: {
-    name: 'Experiencia VIP',
-    price: 40000, // $400 MXN in centavos
-    time_minutes: 20,
-    heygen_credits: 40,
-    features: [
-      'Videollamada de 20 minutos',
-      'Conversación profunda y personalizada',
-      'Experiencia VIP completa',
-      'Más temas y preguntas',
-      'La experiencia más completa'
+      'Videollamada EN VIVO de 5 minutos',
+      'Santa conoce el nombre de tu hijo',
+      'Conversación 100% personalizada',
+      'Menciona sus deseos y cómo se ha portado',
+      'Disponible 24/7 - Comienza ahora mismo'
     ]
   }
 };
+
+// Function to create/get the 100SANTA coupon
+async function ensureSantaCoupon() {
+  try {
+    // Try to retrieve existing coupon
+    const existingCoupon = await stripe.coupons.retrieve('100SANTA').catch(() => null);
+
+    if (existingCoupon) {
+      console.log('✅ Cupón 100SANTA ya existe');
+      return existingCoupon;
+    }
+
+    // Create new coupon if it doesn't exist
+    const coupon = await stripe.coupons.create({
+      id: '100SANTA',
+      percent_off: 100,
+      duration: 'forever',
+      name: 'Cupón Navideño 100% Descuento',
+      metadata: {
+        description: 'Cupón de 100% descuento para videollamada con Santa Claus'
+      }
+    });
+
+    console.log('✅ Cupón 100SANTA creado exitosamente');
+    return coupon;
+  } catch (error) {
+    console.error('❌ Error al crear cupón 100SANTA:', error.message);
+    throw error;
+  }
+}
+
+// Ensure coupon exists on server start
+ensureSantaCoupon();
 
 // Stripe Checkout Session endpoint (just plan selection, no child info yet)
 app.post('/api/create-checkout-session', async (req, res) => {
@@ -119,6 +129,7 @@ app.post('/api/create-checkout-session', async (req, res) => {
         },
       ],
       mode: 'payment',
+      allow_promotion_codes: true, // Permite que el usuario ingrese cupones como 100SANTA
       success_url: `${process.env.FRONTEND_URL || 'http://localhost:5173'}?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.FRONTEND_URL || 'http://localhost:5173'}?cancelled=true`,
       metadata: {

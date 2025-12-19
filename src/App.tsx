@@ -67,11 +67,9 @@ function App() {
         // Track Purchase event (successful payment)
         if (!purchaseTracked) {
           const planMap: Record<number, { name: string; value: number }> = {
-            5: { name: 'mini', value: 100 },
-            10: { name: 'premium', value: 200 },
-            20: { name: 'vip', value: 400 }
+            5: { name: 'standard', value: 150 }
           };
-          const plan = planMap[data.time_limit_minutes] || { name: 'unknown', value: 0 };
+          const plan = planMap[data.time_limit_minutes] || { name: 'standard', value: 150 };
           trackPurchase(plan.name, plan.value, 'MXN', variant);
           setPurchaseTracked(true);
         }
@@ -162,11 +160,9 @@ function App() {
         setAppState('chat');
         // Track video call start
         const planMap: Record<number, string> = {
-          5: 'mini',
-          10: 'premium',
-          20: 'vip'
+          5: 'standard'
         };
-        const planName = planMap[timeLimitMinutes] || 'unknown';
+        const planName = planMap[timeLimitMinutes] || 'standard';
         trackStartCall(planName, timeLimitMinutes, variant);
         setIsLoadingSession(false);
       }, 3000);
@@ -184,11 +180,9 @@ function App() {
 
     // Track video call completion
     const planMap: Record<number, string> = {
-      5: 'mini',
-      10: 'premium',
-      20: 'vip'
+      5: 'standard'
     };
-    const planName = planMap[timeLimitMinutes] || 'unknown';
+    const planName = planMap[timeLimitMinutes] || 'standard';
     trackCompleteCall(planName, timeLimitMinutes, variant);
   };
 

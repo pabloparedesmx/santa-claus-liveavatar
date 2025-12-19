@@ -107,41 +107,41 @@ export function AvatarChat({ childInfo, contextId, timeLimitMinutes, onSessionEn
         // Checkpoint 1: Behavior discussion (2 minutes in = 180s elapsed, 120s remaining for 5min call)
         triggerAt: Math.floor(totalSeconds * 0.4), // 40% through the call
         name: 'Comportamiento',
-        prompt: `Ahora es un buen momento para preguntarle a ${childInfo.name} cómo se ha portado este año. ${
+        prompt: `Si aún no lo has hecho, busca una transición natural en la conversación para preguntarle a ${childInfo.name} cómo se ha portado este año. ${
           childInfo.behaviorNotes
-            ? `Ya sabes que: "${childInfo.behaviorNotes}". Menciona esto de forma positiva y pregúntale más sobre su comportamiento.`
-            : 'Pregúntale cómo se ha portado con su familia y en la escuela.'
-        }`
+            ? `Recuerda que sabes esto: "${childInfo.behaviorNotes}". Menciona estos detalles de forma positiva y orgullosa, como si realmente lo hubieras observado desde el Polo Norte.`
+            : 'Pregúntale cómo se ha portado con su familia y en la escuela, mostrando curiosidad genuina.'
+        } Haz que la transición se sienta como parte natural de tu conversación con él/ella.`
       },
       {
         // Checkpoint 2: Wish list (3 minutes in = 240s elapsed, 60s remaining for 5min call)
         triggerAt: Math.floor(totalSeconds * 0.6), // 60% through the call
         name: 'Deseos Navideños',
-        prompt: `Es momento de hablar sobre lo que ${childInfo.name} desea para Navidad. ${
+        prompt: `De manera fluida y natural, guía la conversación hacia lo que ${childInfo.name} desea para Navidad. ${
           childInfo.wishList
-            ? `Sabes que quiere: "${childInfo.wishList}". Menciona específicamente estos deseos y pregúntale por qué son especiales para él/ella.`
-            : 'Pregúntale qué le gustaría recibir esta Navidad y por qué.'
-        }`
+            ? `Ya sabes que quiere: "${childInfo.wishList}". Menciona estos deseos específicos como si los hubieras visto en tu lista mágica, y pregúntale con emoción por qué son especiales para él/ella.`
+            : 'Pregúntale con entusiasmo qué le gustaría recibir esta Navidad y escucha con atención.'
+        } Mantén el tono cálido y mágico mientras haces la transición.`
       },
       {
         // Checkpoint 3: Additional topics (4 minutes in = 240s elapsed, 60s remaining for 5min call)
         triggerAt: Math.floor(totalSeconds * 0.75), // 75% through the call
         name: 'Temas Adicionales',
-        prompt: `Ahora menciona otros aspectos importantes de la vida de ${childInfo.name}. ${
+        prompt: `Cuando sea apropiado, menciona de forma conversacional otros aspectos de la vida de ${childInfo.name}. ${
           childInfo.additionalInfo
-            ? `Información adicional que tienes: "${childInfo.additionalInfo}". Menciona de forma natural los temas más relevantes aquí (mascotas, escuela, hobbies, amigos, etc.).`
+            ? `Tienes información especial: "${childInfo.additionalInfo}". Incorpora naturalmente los temas más relevantes (mascotas, escuela, hobbies, amigos, etc.) como si los conocieras por tu magia navideña.`
             : childInfo.location
-              ? `Pregúntale sobre su ciudad ${childInfo.location} y qué le gusta hacer allí.`
-              : 'Pregúntale sobre sus pasatiempos favoritos o cosas que le gustan.'
-        }`
+              ? `Habla sobre su ciudad ${childInfo.location} y pregúntale qué le gusta hacer allí.`
+              : 'Pregúntale sobre sus pasatiempos favoritos y cosas que disfruta.'
+        } Haz que se sienta como una conversación fluida, no como un cambio de tema abrupto.`
       },
       {
         // Checkpoint 4: Goodbye (35 seconds remaining)
         triggerAt: 35,
         name: 'Despedida',
-        prompt: `Ya casi se termina nuestro tiempo juntos. Es hora de despedirte de ${childInfo.name} de una manera cálida y emotiva, recordándole lo especial que es y deseándole una feliz Navidad. ${
-          childInfo.wishList ? `Recuérdale que has anotado sus deseos: "${childInfo.wishList}".` : ''
-        }`
+        prompt: `Nuestro tiempo juntos está por terminar. Comienza tu despedida de manera cálida y emotiva. DEBES usar frases explícitas de despedida como "me tengo que ir", "debo regresar al Polo Norte", "nos vemos pronto", o "adiós". Recuérdale a ${childInfo.name} lo especial que es y desea una feliz Navidad. ${
+          childInfo.wishList ? `Menciona que has anotado sus deseos: "${childInfo.wishList}" en tu lista especial.` : ''
+        } Haz que ${childInfo.name} sepa claramente que te estás despidiendo y que la llamada está terminando.`
       }
     ];
   }

@@ -106,7 +106,7 @@ export function Landing() {
             <div className="order-1 md:order-2">
               <div className="relative rounded-xl md:rounded-2xl overflow-hidden shadow-2xl border-4 border-white/30">
                 <img
-                  src="https://images.unsplash.com/photo-1512909006721-3d6018887383?w=800&auto=format&fit=crop&q=80"
+                  src="/image (2).png"
                   alt="Videollamada con Santa Claus - Experiencia mágica personalizada"
                   className="w-full h-auto"
                 />

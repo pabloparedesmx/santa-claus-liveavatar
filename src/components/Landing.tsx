@@ -102,35 +102,28 @@ export function Landing() {
               </div>
             </div>
 
-            {/* Right side - LIVE INTERACTIVE DEMO */}
+            {/* Right side - Demo Image */}
             <div className="order-1 md:order-2">
-              <div className="relative">
-                {/* "Try it Free" Banner */}
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10 bg-gradient-to-r from-green-500 to-green-600 text-white px-4 md:px-6 py-2 rounded-full text-sm md:text-base font-bold shadow-xl animate-bounce">
-                  🎁 ¡PRUÉBALO GRATIS! 🎁
+              <div className="relative rounded-xl md:rounded-2xl overflow-hidden shadow-2xl border-4 border-white/30">
+                <img
+                  src="https://images.unsplash.com/photo-1512909006721-3d6018887383?w=800&auto=format&fit=crop&q=80"
+                  alt="Videollamada con Santa Claus - Experiencia mágica personalizada"
+                  className="w-full h-auto"
+                />
+
+                {/* Live Badge */}
+                <div className="absolute top-3 right-3 md:top-4 md:right-4 bg-red-600/90 backdrop-blur-sm text-white px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-bold flex items-center gap-1.5 shadow-lg">
+                  <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+                  EN VIVO
                 </div>
 
-                <div className="relative rounded-xl md:rounded-2xl overflow-hidden shadow-2xl border-4 border-white/30 bg-black mt-6">
-                  {/* Live Demo Embed */}
-                  <iframe
-                    src="https://embed.liveavatar.com/v1/0a1803c9-d41e-418d-9d63-0df73f26af9b"
-                    allow="microphone"
-                    title="Demo en vivo - Habla con Santa ahora GRATIS"
-                    className="w-full"
-                    style={{ aspectRatio: '16/9', border: 'none' }}
-                  />
-
-                  {/* Live Badge */}
-                  <div className="absolute top-3 right-3 md:top-4 md:right-4 bg-red-600/90 backdrop-blur-sm text-white px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-bold flex items-center gap-1.5 shadow-lg">
-                    <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
-                    DEMO EN VIVO
-                  </div>
-                </div>
-
-                {/* Explanation below demo */}
-                <div className="mt-4 bg-white/10 backdrop-blur-sm rounded-lg p-3 md:p-4 border border-white/20">
-                  <p className="text-white text-xs md:text-sm text-center">
-                    ℹ️ <strong>Esto es solo un demo.</strong> Cuando compras, Santa conocerá el <strong>nombre</strong> de tu hijo, sus <strong>deseos</strong> y todo sobre él.
+                {/* Example conversation overlay */}
+                <div className="absolute bottom-3 left-3 right-3 md:bottom-4 md:left-4 md:right-4 bg-white/95 backdrop-blur-sm rounded-lg p-3 md:p-4 shadow-lg">
+                  <p className="text-gray-800 text-xs md:text-sm italic">
+                    "¡Hola Sofía! He visto que has sido muy buena este año. Me contaron que ayudas mucho en casa y sacaste buenas calificaciones. ¿Me cuentas qué te gustaría recibir esta Navidad?"
+                  </p>
+                  <p className="text-gray-600 text-xs mt-1.5 md:mt-2 font-semibold">
+                    - Conversación 100% personalizada
                   </p>
                 </div>
               </div>

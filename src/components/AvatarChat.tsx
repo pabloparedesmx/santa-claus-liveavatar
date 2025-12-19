@@ -10,6 +10,7 @@ interface AvatarChatProps {
     location?: string;
     wishList?: string;
     behaviorNotes?: string;
+    additionalInfo?: string;
   };
   contextId?: string;
   timeLimitMinutes: number;
@@ -81,12 +82,17 @@ export function AvatarChat({ childInfo, contextId, timeLimitMinutes, onSessionEn
       const encoder = new TextEncoder();
       const data = encoder.encode(JSON.stringify(commandEvent));
 
-      await sessionRef.current.room?.localParticipant?.publishData(
-        data,
-        { topic: 'agent-control', reliable: true }
-      );
-
-      console.log(`✅ ${checkpointName} prompt sent successfully`);
+      // Access the LiveKit room (room property is private, so we need to cast)
+      const session = sessionRef.current as any;
+      if (session.room?.localParticipant) {
+        await session.room.localParticipant.publishData(
+          data,
+          { topic: 'agent-control', reliable: true }
+        );
+        console.log(`✅ ${checkpointName} prompt sent successfully`);
+      } else {
+        console.warn('⚠️ Room or local participant not available');
+      }
     } catch (error) {
       console.error(`❌ Error sending ${checkpointName} prompt:`, error);
     }

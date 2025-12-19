@@ -32,6 +32,7 @@ export function AvatarChat({ childInfo, contextId, timeLimitMinutes, onSessionEn
   const [transcript, setTranscript] = useState<Message[]>([]);
   const [remainingSeconds, setRemainingSeconds] = useState(timeLimitMinutes * 60);
   const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected'>('connecting');
+  const [triggeredCheckpoints, setTriggeredCheckpoints] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     initializeSession();
@@ -58,6 +59,86 @@ export function AvatarChat({ childInfo, contextId, timeLimitMinutes, onSessionEn
       }
     };
   }, []);
+
+  // Function to send guided prompt to Santa
+  async function sendGuidedPrompt(promptText: string, checkpointName: string) {
+    if (!sessionRef.current) {
+      console.warn('⚠️ No session available to send prompt');
+      return;
+    }
+
+    try {
+      console.log(`📍 Checkpoint: ${checkpointName} - Sending guided prompt...`);
+
+      // Send command event to LiveKit room topic "agent-control"
+      // Using avatar.speak_response to let the LLM generate a natural response
+      const commandEvent = {
+        event_type: 'avatar.speak_response',
+        text: promptText
+      };
+
+      // Publish to agent-control topic
+      const encoder = new TextEncoder();
+      const data = encoder.encode(JSON.stringify(commandEvent));
+
+      await sessionRef.current.room?.localParticipant?.publishData(
+        data,
+        { topic: 'agent-control', reliable: true }
+      );
+
+      console.log(`✅ ${checkpointName} prompt sent successfully`);
+    } catch (error) {
+      console.error(`❌ Error sending ${checkpointName} prompt:`, error);
+    }
+  }
+
+  // Generate checkpoint prompts based on child info
+  function getCheckpointPrompts() {
+    const totalSeconds = timeLimitMinutes * 60;
+
+    return [
+      {
+        // Checkpoint 1: Behavior discussion (2 minutes in = 180s elapsed, 120s remaining for 5min call)
+        triggerAt: Math.floor(totalSeconds * 0.4), // 40% through the call
+        name: 'Comportamiento',
+        prompt: `Ahora es un buen momento para preguntarle a ${childInfo.name} cómo se ha portado este año. ${
+          childInfo.behaviorNotes
+            ? `Ya sabes que: "${childInfo.behaviorNotes}". Menciona esto de forma positiva y pregúntale más sobre su comportamiento.`
+            : 'Pregúntale cómo se ha portado con su familia y en la escuela.'
+        }`
+      },
+      {
+        // Checkpoint 2: Wish list (3 minutes in = 240s elapsed, 60s remaining for 5min call)
+        triggerAt: Math.floor(totalSeconds * 0.6), // 60% through the call
+        name: 'Deseos Navideños',
+        prompt: `Es momento de hablar sobre lo que ${childInfo.name} desea para Navidad. ${
+          childInfo.wishList
+            ? `Sabes que quiere: "${childInfo.wishList}". Menciona específicamente estos deseos y pregúntale por qué son especiales para él/ella.`
+            : 'Pregúntale qué le gustaría recibir esta Navidad y por qué.'
+        }`
+      },
+      {
+        // Checkpoint 3: Additional topics (4 minutes in = 240s elapsed, 60s remaining for 5min call)
+        triggerAt: Math.floor(totalSeconds * 0.75), // 75% through the call
+        name: 'Temas Adicionales',
+        prompt: `Ahora menciona otros aspectos importantes de la vida de ${childInfo.name}. ${
+          childInfo.additionalInfo
+            ? `Información adicional que tienes: "${childInfo.additionalInfo}". Menciona de forma natural los temas más relevantes aquí (mascotas, escuela, hobbies, amigos, etc.).`
+            : childInfo.location
+              ? `Pregúntale sobre su ciudad ${childInfo.location} y qué le gusta hacer allí.`
+              : 'Pregúntale sobre sus pasatiempos favoritos o cosas que le gustan.'
+        }`
+      },
+      {
+        // Checkpoint 4: Goodbye (35 seconds remaining)
+        triggerAt: 35,
+        name: 'Despedida',
+        prompt: `Ya casi se termina nuestro tiempo juntos. Es hora de despedirte de ${childInfo.name} de una manera cálida y emotiva, recordándole lo especial que es y deseándole una feliz Navidad. ${
+          childInfo.wishList ? `Recuérdale que has anotado sus deseos: "${childInfo.wishList}".` : ''
+        }`
+      }
+    ];
+  }
 
   // Function to stop session via backend API
   async function stopSessionViaAPI() {
@@ -89,6 +170,25 @@ export function AvatarChat({ childInfo, contextId, timeLimitMinutes, onSessionEn
       console.error('❌ Error calling stop-session API:', error);
     }
   }
+
+  // Auto-trigger conversation checkpoints
+  useEffect(() => {
+    if (connectionStatus !== 'connected') return;
+
+    const checkpoints = getCheckpointPrompts();
+
+    // Check each checkpoint
+    checkpoints.forEach((checkpoint, index) => {
+      // Check if we've reached this checkpoint time and haven't triggered it yet
+      if (remainingSeconds === checkpoint.triggerAt && !triggeredCheckpoints.has(index)) {
+        console.log(`⏰ Checkpoint ${index + 1}/${checkpoints.length}: ${checkpoint.name} (${remainingSeconds}s remaining)`);
+        sendGuidedPrompt(checkpoint.prompt, checkpoint.name);
+
+        // Mark this checkpoint as triggered
+        setTriggeredCheckpoints(prev => new Set(prev).add(index));
+      }
+    });
+  }, [remainingSeconds, connectionStatus, triggeredCheckpoints, childInfo, timeLimitMinutes]);
 
   // Auto-end session when time runs out
   useEffect(() => {

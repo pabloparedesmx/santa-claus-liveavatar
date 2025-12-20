@@ -41,10 +41,12 @@ export function AvatarChat({ childInfo, contextId, timeLimitMinutes, onSessionEn
     // Countdown Timer
     const timer = setInterval(() => {
       setRemainingSeconds(prev => {
-        if (prev <= 1) {
-          return 0;
+        const newValue = prev <= 1 ? 0 : prev - 1;
+        // Log every 10 seconds + critical moments for debugging
+        if (newValue % 10 === 0 || newValue === 35 || newValue <= 5) {
+          console.log(`⏱️ Tiempo restante: ${newValue}s (${Math.floor(newValue / 60)}:${(newValue % 60).toString().padStart(2, '0')})`);
         }
-        return prev - 1;
+        return newValue;
       });
     }, 1000);
 
@@ -100,13 +102,15 @@ export function AvatarChat({ childInfo, contextId, timeLimitMinutes, onSessionEn
 
   // Function to send farewell message (non-interruptible)
   async function sendFarewellMessage() {
+    console.log('🔥 sendFarewellMessage() CALLED');
+
     if (!sessionRef.current) {
-      console.warn('⚠️ No session available to send farewell');
+      console.error('❌ CRITICAL: No session available to send farewell');
       return;
     }
 
     try {
-      console.log('📍 Despedida Final - Enviando mensaje directo (no interrumpible)...');
+      console.log('📍 Despedida Final - Construyendo mensaje...');
 
       // Build personalized farewell text
       const farewellText = `${childInfo.name}, nuestro tiempo juntos ha llegado a su fin. Quiero que sepas lo especial que eres para mí. ${
@@ -114,6 +118,8 @@ export function AvatarChat({ childInfo, contextId, timeLimitMinutes, onSessionEn
           ? `He anotado todos tus deseos en mi lista mágica: ${childInfo.wishList}. `
           : ''
       }Ahora debo regresar al Polo Norte para preparar los regalos de todos los niños del mundo. Te deseo una muy feliz Navidad junto a tu familia. Recuerda portarte bien y ser amable con los demás. ¡Ho ho ho! ¡Adiós ${childInfo.name}, nos vemos pronto!`;
+
+      console.log('📝 Farewell text:', farewellText.substring(0, 100) + '...');
 
       // Use avatar.speak_text instead of speak_response
       // This makes Santa say the exact text without LLM processing
@@ -123,22 +129,33 @@ export function AvatarChat({ childInfo, contextId, timeLimitMinutes, onSessionEn
         text: farewellText
       };
 
+      console.log('📦 Command event:', JSON.stringify(commandEvent).substring(0, 150) + '...');
+
       // Publish to agent-control topic
       const encoder = new TextEncoder();
       const data = encoder.encode(JSON.stringify(commandEvent));
 
       const session = sessionRef.current as any;
+      console.log('🔍 Session exists:', !!session);
+      console.log('🔍 Room exists:', !!session.room);
+      console.log('🔍 LocalParticipant exists:', !!session.room?.localParticipant);
+
       if (session.room?.localParticipant) {
+        console.log('🚀 Publishing to LiveKit topic: agent-control...');
         await session.room.localParticipant.publishData(
           data,
           { topic: 'agent-control', reliable: true }
         );
-        console.log('✅ Despedida enviada como texto directo (no interrumpible)');
+        console.log('✅ ✅ ✅ DESPEDIDA ENVIADA EXITOSAMENTE ✅ ✅ ✅');
       } else {
-        console.warn('⚠️ Room or local participant not available');
+        console.error('❌ CRITICAL: Room or local participant not available');
+        console.error('Session:', session);
+        console.error('Room:', session.room);
+        console.error('LocalParticipant:', session.room?.localParticipant);
       }
     } catch (error) {
-      console.error('❌ Error enviando despedida:', error);
+      console.error('❌ ❌ ❌ ERROR FATAL EN sendFarewellMessage:', error);
+      console.error('Error stack:', error instanceof Error ? error.stack : 'No stack');
     }
   }
 
@@ -236,16 +253,23 @@ export function AvatarChat({ childInfo, contextId, timeLimitMinutes, onSessionEn
 
   // Auto-trigger farewell message at 35 seconds (non-interruptible)
   useEffect(() => {
-    if (connectionStatus !== 'connected') return;
+    console.log(`🔍 Farewell useEffect - remainingSeconds: ${remainingSeconds}, connectionStatus: ${connectionStatus}, has999: ${triggeredCheckpoints.has(999)}`);
+
+    if (connectionStatus !== 'connected') {
+      console.log('⚠️ Farewell skipped - not connected');
+      return;
+    }
 
     // Trigger farewell at 35 seconds remaining
     // Using checkpoint index 999 to avoid conflicts with regular checkpoints
     if (remainingSeconds === 35 && !triggeredCheckpoints.has(999)) {
-      console.log('⏰ Despedida Final: 35 segundos restantes');
+      console.log('🎯 DESPEDIDA TRIGGER ACTIVADO - 35 segundos restantes');
       sendFarewellMessage();
 
       // Mark farewell as triggered
       setTriggeredCheckpoints(prev => new Set(prev).add(999));
+    } else if (remainingSeconds === 35) {
+      console.log('⚠️ Despedida ya fue triggered anteriormente');
     }
   }, [remainingSeconds, connectionStatus, triggeredCheckpoints, childInfo]);
 
@@ -509,6 +533,22 @@ export function AvatarChat({ childInfo, contextId, timeLimitMinutes, onSessionEn
       }`}>
         ⏱️ {formatTime(remainingSeconds)}
       </div>
+
+      {/* Farewell Warning Banner - appears at 30 seconds */}
+      {remainingSeconds <= 30 && remainingSeconds > 0 && (
+        <div className="absolute top-16 md:top-20 left-1/2 transform -translate-x-1/2 z-50 animate-fadeIn">
+          <div className="bg-gradient-to-r from-yellow-400 to-orange-400 border-4 border-yellow-300 rounded-2xl shadow-2xl px-4 py-3 md:px-8 md:py-4 max-w-[90vw] md:max-w-md animate-pulse">
+            <div className="text-center">
+              <p className="text-lg md:text-2xl font-bold text-gray-900 mb-1 md:mb-2">
+                ⏰ Santa debe volver al Polo Norte pronto
+              </p>
+              <p className="text-base md:text-xl font-semibold text-gray-800">
+                ¡Despídete de él!
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Connection status - iPhone style */}
       <div className={`absolute top-safe top-4 right-4 md:right-4 px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-semibold ${

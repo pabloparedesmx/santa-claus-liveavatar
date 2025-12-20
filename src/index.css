@@ -59,3 +59,19 @@
     transform: translateX(100px) rotate(360deg);
   }
 }
+
+/* Fade in animation for farewell warning */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out forwards;
+}

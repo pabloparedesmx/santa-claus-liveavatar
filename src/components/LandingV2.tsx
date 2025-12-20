@@ -209,7 +209,7 @@ export function LandingV2() {
                 }}
                 className="w-full max-w-md mx-auto bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold text-2xl md:text-3xl px-8 md:px-12 py-5 md:py-6 rounded-2xl transform hover:scale-105 transition-all shadow-2xl hover:shadow-green-500/50 border-4 border-green-400 animate-bounce"
               >
-                Reservar Ahora - Desde $100
+                Hablar Ahora - Desde $100
               </button>
             </div>
           </div>
@@ -412,7 +412,7 @@ export function LandingV2() {
                 disabled={isProcessing}
                 className="christmas-button w-full py-4 text-xl font-bold disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 transition-all"
               >
-                {isProcessing ? '⏳ Procesando...' : 'Reservar Ahora ⭐'}
+                {isProcessing ? '⏳ Procesando...' : 'Hablar Ahora ⭐'}
               </button>
             </div>
           </div>

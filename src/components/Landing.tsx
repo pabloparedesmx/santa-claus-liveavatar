@@ -73,7 +73,7 @@ export function Landing() {
                   }}
                   className="w-full md:w-auto bg-christmas-green hover:bg-green-700 text-white font-bold text-lg md:text-xl px-8 md:px-12 py-4 md:py-5 rounded-xl transform hover:scale-105 md:hover:scale-110 transition-all shadow-2xl hover:shadow-green-500/50 border-2 border-green-400"
                 >
-                  Reservar Ahora - Solo $150 MXN 🎁
+                  Hablar Ahora - Solo $150 MXN 🎁
                 </button>
                 <p className="text-white/90 text-base md:text-sm font-semibold">
                   ✅ Pago seguro • ✅ Disponible 24/7 • ✅ 5 minutos de magia
@@ -307,7 +307,7 @@ export function Landing() {
                 disabled={isProcessing}
                 className="w-full bg-christmas-red hover:bg-red-700 text-white font-bold text-xl py-5 px-8 rounded-xl transition-all transform hover:scale-105 shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isProcessing ? '⏳ Procesando...' : '🎄 Reservar Ahora'}
+                {isProcessing ? '⏳ Procesando...' : '🎄 Hablar Ahora'}
               </button>
 
               <p className="text-center text-gray-500 text-sm mt-4">

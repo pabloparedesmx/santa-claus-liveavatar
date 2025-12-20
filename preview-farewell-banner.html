@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Preview: Banner de Despedida</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -20px) scale(0.95);
+      }
+      100% {
+        opacity: 1;
+        transform: translate(-50%, 0) scale(1);
+      }
+    }
+
+    .animate-fadeIn {
+      animation: fadeIn 0.5s ease-out forwards;
+    }
+
+    /* Simulate video background */
+    .video-bg {
+      background: linear-gradient(135deg, #991b1b 0%, #7f1d1d 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .video-bg::before {
+      content: "🎅";
+      position: absolute;
+      font-size: 200px;
+      opacity: 0.3;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  </style>
+</head>
+<body class="bg-gray-900">
+
+  <!-- Controls -->
+  <div class="fixed top-4 left-4 z-[100] bg-white/90 backdrop-blur-sm rounded-lg p-4 shadow-lg">
+    <h3 class="font-bold mb-2">Preview Controls</h3>
+    <button id="toggleBanner" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mb-2 w-full">
+      Toggle Banner
+    </button>
+    <button id="simulateTimer" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded w-full">
+      Simulate Timer (30→0)
+    </button>
+    <div class="mt-2 text-sm">
+      <div>Time: <span id="timeDisplay" class="font-mono font-bold">0:30</span></div>
+      <div class="text-xs text-gray-600 mt-1">
+        Banner appears at ≤30s
+      </div>
+    </div>
+  </div>
+
+  <!-- Desktop Preview -->
+  <div class="mb-8">
+    <div class="bg-gray-800 text-white text-center py-2 font-bold">
+      💻 DESKTOP PREVIEW (>768px)
+    </div>
+
+    <div class="video-bg w-full h-[600px] relative">
+      <!-- Timer (top-left) -->
+      <div class="absolute top-4 left-4 backdrop-blur-sm px-4 py-2 rounded-lg font-mono text-lg font-bold bg-red-600/90 text-white animate-pulse">
+        ⏱️ <span id="timer1">0:30</span>
+      </div>
+
+      <!-- Connection Status (top-right) -->
+      <div class="absolute top-4 right-4 px-4 py-2 rounded-full text-sm font-semibold bg-green-500 text-white flex items-center gap-2">
+        <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+        En Vivo
+      </div>
+
+      <!-- FAREWELL BANNER -->
+      <div id="banner1" class="absolute top-20 left-1/2 transform -translate-x-1/2 z-50 animate-fadeIn" style="display: none;">
+        <div class="bg-gradient-to-r from-yellow-400 to-orange-400 border-4 border-yellow-300 rounded-2xl shadow-2xl px-8 py-4 max-w-md animate-pulse">
+          <div class="text-center">
+            <p class="text-2xl font-bold text-gray-900 mb-2">
+              ⏰ Santa debe volver al Polo Norte pronto
+            </p>
+            <p class="text-xl font-semibold text-gray-800">
+              ¡Despídete de él!
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mock controls at bottom -->
+      <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-4">
+        <button class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-full flex items-center gap-2">
+          🔴 Terminar Llamada
+        </button>
+        <button class="bg-gray-800 hover:bg-gray-700 text-white px-6 py-3 rounded-full">
+          🎤 Silenciar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Preview -->
+  <div class="mb-8">
+    <div class="bg-gray-800 text-white text-center py-2 font-bold">
+      📱 MOBILE PREVIEW (<768px)
+    </div>
+
+    <div class="max-w-[375px] mx-auto">
+      <div class="video-bg w-full h-[667px] relative">
+        <!-- Timer (top-left) -->
+        <div class="absolute top-4 left-4 backdrop-blur-sm px-3 py-1.5 rounded-lg font-mono text-sm font-bold bg-red-600/90 text-white animate-pulse">
+          ⏱️ <span id="timer2">0:30</span>
+        </div>
+
+        <!-- Connection Status (top-right) -->
+        <div class="absolute top-4 right-4 px-3 py-1.5 rounded-full text-xs font-semibold bg-green-500 text-white flex items-center gap-2">
+          <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+          En Vivo
+        </div>
+
+        <!-- FAREWELL BANNER -->
+        <div id="banner2" class="absolute top-16 left-1/2 transform -translate-x-1/2 z-50 animate-fadeIn" style="display: none;">
+          <div class="bg-gradient-to-r from-yellow-400 to-orange-400 border-4 border-yellow-300 rounded-2xl shadow-2xl px-4 py-3 max-w-[90vw] animate-pulse">
+            <div class="text-center">
+              <p class="text-lg font-bold text-gray-900 mb-1">
+                ⏰ Santa debe volver al Polo Norte pronto
+              </p>
+              <p class="text-base font-semibold text-gray-800">
+                ¡Despídete de él!
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mock controls at bottom -->
+        <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+          <button class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-full text-sm flex items-center gap-1">
+            🔴 Terminar
+          </button>
+          <button class="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-full text-sm">
+            🎤
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info -->
+  <div class="bg-white rounded-lg p-6 max-w-4xl mx-auto mb-8">
+    <h2 class="text-2xl font-bold mb-4">Banner Specifications</h2>
+
+    <div class="grid md:grid-cols-2 gap-4">
+      <div>
+        <h3 class="font-bold text-lg mb-2">📱 Mobile</h3>
+        <ul class="text-sm space-y-1">
+          <li>• Text: <code>text-lg</code> / <code>text-base</code></li>
+          <li>• Padding: <code>px-4 py-3</code></li>
+          <li>• Max width: <code>90vw</code></li>
+          <li>• Position: <code>top-16</code> (below timer)</li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="font-bold text-lg mb-2">💻 Desktop</h3>
+        <ul class="text-sm space-y-1">
+          <li>• Text: <code>text-2xl</code> / <code>text-xl</code></li>
+          <li>• Padding: <code>px-8 py-4</code></li>
+          <li>• Max width: <code>max-w-md</code></li>
+          <li>• Position: <code>top-20</code> (below timer)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-4 p-4 bg-yellow-50 border-l-4 border-yellow-400">
+      <p class="text-sm">
+        <strong>Trigger:</strong> Banner appears when <code>remainingSeconds ≤ 30</code><br>
+        <strong>Animation:</strong> Fade-in (0.5s) + continuous pulse<br>
+        <strong>Colors:</strong> Yellow-orange gradient (urgent but friendly)<br>
+        <strong>Z-index:</strong> 50 (stays above video, below controls)
+      </p>
+    </div>
+  </div>
+
+  <script>
+    let countdown = 30;
+    let intervalId = null;
+
+    const banner1 = document.getElementById('banner1');
+    const banner2 = document.getElementById('banner2');
+    const timer1 = document.getElementById('timer1');
+    const timer2 = document.getElementById('timer2');
+    const timeDisplay = document.getElementById('timeDisplay');
+
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function updateTimers() {
+      const formattedTime = formatTime(countdown);
+      timer1.textContent = formattedTime;
+      timer2.textContent = formattedTime;
+      timeDisplay.textContent = formattedTime;
+
+      // Show/hide banners based on countdown
+      if (countdown <= 30 && countdown > 0) {
+        banner1.style.display = 'block';
+        banner2.style.display = 'block';
+      } else {
+        banner1.style.display = 'none';
+        banner2.style.display = 'none';
+      }
+    }
+
+    // Toggle banner manually
+    document.getElementById('toggleBanner').addEventListener('click', () => {
+      if (banner1.style.display === 'none') {
+        banner1.style.display = 'block';
+        banner2.style.display = 'block';
+      } else {
+        banner1.style.display = 'none';
+        banner2.style.display = 'none';
+      }
+    });
+
+    // Simulate timer countdown
+    document.getElementById('simulateTimer').addEventListener('click', () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+        countdown = 30;
+        updateTimers();
+        document.getElementById('simulateTimer').textContent = 'Simulate Timer (30→0)';
+        return;
+      }
+
+      countdown = 30;
+      updateTimers();
+      document.getElementById('simulateTimer').textContent = 'Stop Simulation';
+
+      intervalId = setInterval(() => {
+        countdown--;
+        updateTimers();
+
+        if (countdown <= 0) {
+          clearInterval(intervalId);
+          intervalId = null;
+          countdown = 30;
+          updateTimers();
+          document.getElementById('simulateTimer').textContent = 'Simulate Timer (30→0)';
+        }
+      }, 1000);
+    });
+
+    // Show banners by default
+    updateTimers();
+    banner1.style.display = 'block';
+    banner2.style.display = 'block';
+  </script>
+
+</body>
+</html>

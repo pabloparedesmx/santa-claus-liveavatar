@@ -98,6 +98,50 @@ export function AvatarChat({ childInfo, contextId, timeLimitMinutes, onSessionEn
     }
   }
 
+  // Function to send farewell message (non-interruptible)
+  async function sendFarewellMessage() {
+    if (!sessionRef.current) {
+      console.warn('⚠️ No session available to send farewell');
+      return;
+    }
+
+    try {
+      console.log('📍 Despedida Final - Enviando mensaje directo (no interrumpible)...');
+
+      // Build personalized farewell text
+      const farewellText = `${childInfo.name}, nuestro tiempo juntos ha llegado a su fin. Quiero que sepas lo especial que eres para mí. ${
+        childInfo.wishList
+          ? `He anotado todos tus deseos en mi lista mágica: ${childInfo.wishList}. `
+          : ''
+      }Ahora debo regresar al Polo Norte para preparar los regalos de todos los niños del mundo. Te deseo una muy feliz Navidad junto a tu familia. Recuerda portarte bien y ser amable con los demás. ¡Ho ho ho! ¡Adiós ${childInfo.name}, nos vemos pronto!`;
+
+      // Use avatar.speak_text instead of speak_response
+      // This makes Santa say the exact text without LLM processing
+      // This prevents interruptions and ensures complete delivery
+      const commandEvent = {
+        event_type: 'avatar.speak_text',
+        text: farewellText
+      };
+
+      // Publish to agent-control topic
+      const encoder = new TextEncoder();
+      const data = encoder.encode(JSON.stringify(commandEvent));
+
+      const session = sessionRef.current as any;
+      if (session.room?.localParticipant) {
+        await session.room.localParticipant.publishData(
+          data,
+          { topic: 'agent-control', reliable: true }
+        );
+        console.log('✅ Despedida enviada como texto directo (no interrumpible)');
+      } else {
+        console.warn('⚠️ Room or local participant not available');
+      }
+    } catch (error) {
+      console.error('❌ Error enviando despedida:', error);
+    }
+  }
+
   // Generate checkpoint prompts based on child info
   function getCheckpointPrompts() {
     const totalSeconds = timeLimitMinutes * 60;
@@ -134,15 +178,9 @@ export function AvatarChat({ childInfo, contextId, timeLimitMinutes, onSessionEn
               ? `Habla sobre su ciudad ${childInfo.location} y pregúntale qué le gusta hacer allí.`
               : 'Pregúntale sobre sus pasatiempos favoritos y cosas que disfruta.'
         } Haz que se sienta como una conversación fluida, no como un cambio de tema abrupto.`
-      },
-      {
-        // Checkpoint 4: Goodbye (35 seconds remaining)
-        triggerAt: 35,
-        name: 'Despedida',
-        prompt: `Nuestro tiempo juntos está por terminar. Comienza tu despedida de manera cálida y emotiva. DEBES usar frases explícitas de despedida como "me tengo que ir", "debo regresar al Polo Norte", "nos vemos pronto", o "adiós". Recuérdale a ${childInfo.name} lo especial que es y desea una feliz Navidad. ${
-          childInfo.wishList ? `Menciona que has anotado sus deseos: "${childInfo.wishList}" en tu lista especial.` : ''
-        } Haz que ${childInfo.name} sepa claramente que te estás despidiendo y que la llamada está terminando.`
       }
+      // Note: Checkpoint 4 (Farewell) is now handled separately by sendFarewellMessage()
+      // using speak_text instead of speak_response to prevent interruptions
     ];
   }
 
@@ -195,6 +233,21 @@ export function AvatarChat({ childInfo, contextId, timeLimitMinutes, onSessionEn
       }
     });
   }, [remainingSeconds, connectionStatus, triggeredCheckpoints, childInfo, timeLimitMinutes]);
+
+  // Auto-trigger farewell message at 35 seconds (non-interruptible)
+  useEffect(() => {
+    if (connectionStatus !== 'connected') return;
+
+    // Trigger farewell at 35 seconds remaining
+    // Using checkpoint index 999 to avoid conflicts with regular checkpoints
+    if (remainingSeconds === 35 && !triggeredCheckpoints.has(999)) {
+      console.log('⏰ Despedida Final: 35 segundos restantes');
+      sendFarewellMessage();
+
+      // Mark farewell as triggered
+      setTriggeredCheckpoints(prev => new Set(prev).add(999));
+    }
+  }, [remainingSeconds, connectionStatus, triggeredCheckpoints, childInfo]);
 
   // Auto-end session when time runs out
   useEffect(() => {

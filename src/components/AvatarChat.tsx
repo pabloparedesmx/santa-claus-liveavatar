@@ -35,6 +35,11 @@ export function AvatarChat({ childInfo, contextId, timeLimitMinutes, onSessionEn
   const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected'>('connecting');
   const [triggeredCheckpoints, setTriggeredCheckpoints] = useState<Set<number>>(new Set());
 
+  // Intelligent checkpoint system - only trigger during silence
+  const [pendingCheckpoint, setPendingCheckpoint] = useState<{index: number; prompt: string; name: string} | null>(null);
+  const [isSomeoneSpeaking, setIsSomeoneSpeaking] = useState(false);
+  const silenceTimerRef = useRef<number | null>(null);
+
   useEffect(() => {
     initializeSession();
 
@@ -159,6 +164,38 @@ export function AvatarChat({ childInfo, contextId, timeLimitMinutes, onSessionEn
     }
   }
 
+  // Silence detection timer - sends pending checkpoint after 8 seconds of silence
+  function startSilenceTimer() {
+    // Clear any existing timer
+    if (silenceTimerRef.current) {
+      clearTimeout(silenceTimerRef.current);
+    }
+
+    // Only start timer if there's a pending checkpoint
+    if (!pendingCheckpoint) {
+      console.log('   ℹ️ No pending checkpoint, silence timer not started');
+      return;
+    }
+
+    console.log(`   🔔 Pending checkpoint: ${pendingCheckpoint.name}`);
+    console.log('   ⏳ Will send if silence continues for 8 seconds...');
+
+    silenceTimerRef.current = setTimeout(() => {
+      // Double-check no one is speaking
+      if (!isSomeoneSpeaking && pendingCheckpoint) {
+        console.log(`🔕 SILENCE DETECTED (8s) - Sending pending checkpoint: ${pendingCheckpoint.name}`);
+        sendGuidedPrompt(pendingCheckpoint.prompt, pendingCheckpoint.name);
+
+        // Clear the pending checkpoint
+        setPendingCheckpoint(null);
+      } else {
+        console.log('   ⚠️ Silence timer fired but someone is speaking or no pending checkpoint');
+      }
+
+      silenceTimerRef.current = null;
+    }, 8000); // 8 seconds of silence
+  }
+
   // Generate checkpoint prompts based on child info
   function getCheckpointPrompts() {
     const totalSeconds = timeLimitMinutes * 60;
@@ -232,7 +269,7 @@ export function AvatarChat({ childInfo, contextId, timeLimitMinutes, onSessionEn
     }
   }
 
-  // Auto-trigger conversation checkpoints
+  // Intelligent checkpoints - mark as pending, send only during silence
   useEffect(() => {
     if (connectionStatus !== 'connected') return;
 
@@ -242,10 +279,17 @@ export function AvatarChat({ childInfo, contextId, timeLimitMinutes, onSessionEn
     checkpoints.forEach((checkpoint, index) => {
       // Check if we've reached this checkpoint time and haven't triggered it yet
       if (remainingSeconds === checkpoint.triggerAt && !triggeredCheckpoints.has(index)) {
-        console.log(`⏰ Checkpoint ${index + 1}/${checkpoints.length}: ${checkpoint.name} (${remainingSeconds}s remaining)`);
-        sendGuidedPrompt(checkpoint.prompt, checkpoint.name);
+        console.log(`📌 Checkpoint ${index + 1}/${checkpoints.length} MARKED AS PENDING: ${checkpoint.name} (${remainingSeconds}s remaining)`);
+        console.log(`   Will send during next silence (7-10 seconds of no speech)`);
 
-        // Mark this checkpoint as triggered
+        // Mark as pending instead of sending immediately
+        setPendingCheckpoint({
+          index,
+          prompt: checkpoint.prompt,
+          name: checkpoint.name
+        });
+
+        // Mark this checkpoint as triggered so it doesn't get queued again
         setTriggeredCheckpoints(prev => new Set(prev).add(index));
       }
     });
@@ -376,18 +420,44 @@ export function AvatarChat({ childInfo, contextId, timeLimitMinutes, onSessionEn
 
       session.on(AgentEventsEnum.AVATAR_SPEAK_STARTED, () => {
         console.log('🎅 Santa started speaking');
+        setIsSomeoneSpeaking(true);
+
+        // Cancel any pending silence timer
+        if (silenceTimerRef.current) {
+          clearTimeout(silenceTimerRef.current);
+          silenceTimerRef.current = null;
+          console.log('   ⏸️ Silence timer cancelled - Santa speaking');
+        }
       });
 
       session.on(AgentEventsEnum.AVATAR_SPEAK_ENDED, (data: any) => {
         console.log('🎅 Santa stopped speaking:', data);
+        setIsSomeoneSpeaking(false);
+
+        // Start silence detection timer
+        console.log('   ⏱️ Starting silence timer (8 seconds)...');
+        startSilenceTimer();
       });
 
       session.on(AgentEventsEnum.USER_SPEAK_STARTED, () => {
         console.log('👤 User started speaking');
+        setIsSomeoneSpeaking(true);
+
+        // Cancel any pending silence timer
+        if (silenceTimerRef.current) {
+          clearTimeout(silenceTimerRef.current);
+          silenceTimerRef.current = null;
+          console.log('   ⏸️ Silence timer cancelled - User speaking');
+        }
       });
 
       session.on(AgentEventsEnum.USER_SPEAK_ENDED, (data: any) => {
         console.log('👤 User stopped speaking:', data);
+        setIsSomeoneSpeaking(false);
+
+        // Start silence detection timer
+        console.log('   ⏱️ Starting silence timer (8 seconds)...');
+        startSilenceTimer();
       });
 
       // Server events for capturing accurate transcriptions
